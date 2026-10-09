@@ -23,9 +23,9 @@
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description" content="GUST: A service worker -less web browser-in-a-browser" />
-    <title>GUST Browser</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%239de5ff' d='M288 32c0 17.7 14.3 32 32 32h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H352c53 0 96-43 96-96s-43-96-96-96H320c-17.7 0-32 14.3-32 32zm64 352c0 17.7 14.3 32 32 32h32c53 0 96-43 96-96s-43-96-96-96H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H384c-17.7 0-32 14.3-32 32zM128 512h32c53 0 96-43 96-96s-43-96-96-96H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H160c17.7 0 32 14.3 32 32s-14.3 32-32 32H128c-17.7 0-32 14.3-32 32s14.3 32 32 32z'/%3E%3C/svg%3E" />
+    <meta name="description" content="Scout is a browser-in-a-browser for private, proxy-powered web browsing." />
+    <title>Scout Browser</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%239de5ff' stroke-width='5'/%3E%3Cpath d='M5 32h54M32 5c8 8 12 17 12 27S40 51 32 59C24 51 20 42 20 32S24 13 32 5Z' fill='none' stroke='%239de5ff' stroke-width='4'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
@@ -1134,11 +1134,8 @@
         #metricsBtn:hover i       { transform: translateY(-3px); }
         /* logs/devToggle — tilt like a console being opened */
         #devToggle:hover i        { transform: rotate(-12deg) scale(1.12); }
-        /* elements/codeBtn inspector — pulse */
-        #codeBtn:hover i          { transform: scale(1.2); }
-
         /* Panel button active — blue border */
-        #devToggle.active, #codeBtn.active, #aiBtn.active {
+        #devToggle.active, #aiBtn.active {
             border: 1px solid var(--ac) !important;
             color: var(--ac);
             background: rgba(157, 229, 255, 0.07);
@@ -1171,6 +1168,39 @@
         .tool-btn:hover {
             background: var(--bg3);
             color: var(--tx)
+        }
+
+        #devToggle {
+            position: relative;
+            border: 1px solid rgba(93, 145, 207, .25);
+            background: rgba(15, 29, 49, .62);
+            color: #a9c1de;
+            transition: background .16s, color .16s, border-color .16s, box-shadow .16s, transform .16s;
+        }
+
+        #devToggle:hover {
+            border-color: rgba(74, 191, 255, .55);
+            color: #82dcff;
+            background: rgba(36, 92, 148, .35);
+        }
+
+        #devToggle.active {
+            border-color: rgba(71, 190, 255, .76) !important;
+            color: #73d7ff;
+            background: linear-gradient(145deg, rgba(28, 92, 151, .38), rgba(16, 43, 76, .58));
+            box-shadow: inset 0 0 0 1px rgba(92, 202, 255, .12), 0 0 15px rgba(43, 161, 239, .17);
+        }
+
+        #devToggle.active::after {
+            content: "";
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #55e2bd;
+            box-shadow: 0 0 7px rgba(85, 226, 189, .7);
         }
 
         .status-pill {
@@ -3068,6 +3098,387 @@
             transform-origin: center center;
         }
 
+        #metricsModal {
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        #metricsModal .metrics-shell {
+            width: min(1480px, calc(100vw - 64px));
+            max-width: none;
+            max-height: min(820px, calc(100vh - 48px));
+            margin: auto;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(ellipse at 92% 0%, rgba(47, 136, 244, .16), transparent 36%),
+                linear-gradient(145deg, #0c1728, #080f1c 72%);
+            border: 1px solid rgba(91, 151, 229, .36);
+            border-radius: 20px;
+            box-shadow: 0 28px 90px rgba(0, 0, 0, .62), 0 0 50px rgba(28, 104, 207, .12);
+        }
+
+        #metricsModal .metrics-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 22px 26px 18px;
+            border-bottom: 1px solid rgba(101, 147, 208, .18);
+            background: linear-gradient(100deg, rgba(14, 29, 51, .94), rgba(10, 20, 36, .82));
+        }
+
+        #metricsModal .metrics-header-icon {
+            width: 46px;
+            height: 46px;
+            flex: 0 0 46px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(62, 174, 255, .34);
+            border-radius: 14px;
+            color: #6bd4ff;
+            background: linear-gradient(145deg, rgba(37, 136, 236, .24), rgba(41, 76, 155, .18));
+            box-shadow: 0 0 24px rgba(40, 147, 241, .14), inset 0 1px 0 rgba(183, 224, 255, .1);
+            font-size: 19px;
+        }
+
+        #metricsModal .metrics-title-wrap {
+            min-width: 0;
+            flex: 1;
+        }
+
+        #metricsModal .metrics-eyebrow {
+            margin-bottom: 3px;
+            color: #66cfff;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+        }
+
+        #metricsModal .metrics-header h3 {
+            margin: 0;
+            color: #eef6ff;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -.02em;
+        }
+
+        #metricsModal .metrics-header p {
+            margin-top: 4px;
+            color: #8ea4c3;
+            font-size: 12px;
+        }
+
+        #metricsModal .metrics-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 10px;
+            border: 1px solid rgba(65, 215, 185, .24);
+            border-radius: 999px;
+            color: #81e5d1;
+            background: rgba(24, 151, 128, .1);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        #metricsModal .metrics-live::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #4ce0be;
+            box-shadow: 0 0 9px rgba(76, 224, 190, .7);
+        }
+
+        #metricsModal #metricsBody {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 0;
+            padding: 20px 24px 22px;
+            overflow-y: auto;
+            scrollbar-color: rgba(80, 139, 214, .5) transparent;
+        }
+
+        #metricsModal .metrics-overview {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        #metricsModal .metric-card {
+            min-width: 0;
+            min-height: 126px;
+            position: relative;
+            padding: 15px 15px 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            border: 1px solid rgba(99, 140, 199, .23);
+            border-radius: 14px;
+            background: linear-gradient(145deg, rgba(18, 35, 59, .92), rgba(10, 21, 38, .94));
+            box-shadow: inset 0 1px 0 rgba(178, 210, 255, .045);
+            transition: transform .16s, border-color .16s, box-shadow .16s;
+        }
+
+        #metricsModal .metric-card::after {
+            content: "";
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            right: -34px;
+            top: -42px;
+            border-radius: 50%;
+            background: var(--metric-glow, rgba(62, 174, 255, .12));
+            filter: blur(15px);
+            pointer-events: none;
+        }
+
+        #metricsModal .metric-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(88, 171, 249, .46);
+            box-shadow: inset 0 1px 0 rgba(178, 210, 255, .06), 0 9px 24px rgba(0, 0, 0, .18);
+        }
+
+        #metricsModal .metric-card-icon {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(75, 173, 248, .2);
+            border-radius: 9px;
+            color: var(--metric-accent, #61ccff);
+            background: rgba(35, 111, 187, .14);
+            font-size: 12px;
+        }
+
+        #metricsModal .metric-card-label {
+            color: #8fa6c5;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            overflow-wrap: anywhere;
+        }
+
+        #metricsModal .metric-card-value {
+            color: #f1f7ff;
+            font-family: var(--mono);
+            font-size: clamp(18px, 1.8vw, 24px);
+            font-weight: 700;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+
+        #metricsModal .metric-card-sub {
+            color: #8298b7;
+            font-size: 12px;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
+        }
+
+        #metricsModal .metric-card.uptime { --metric-accent: #74d2ff; --metric-glow: rgba(34, 137, 225, .16); }
+        #metricsModal .metric-card.tabs { --metric-accent: #b395ff; --metric-glow: rgba(120, 77, 220, .16); }
+        #metricsModal .metric-card.requests { --metric-accent: #ffc66e; --metric-glow: rgba(233, 157, 53, .16); }
+        #metricsModal .metric-card.cache { --metric-accent: #5fe0c2; --metric-glow: rgba(38, 177, 150, .15); }
+        #metricsModal .metric-card.heap { --metric-accent: #70c5ff; --metric-glow: rgba(41, 128, 227, .16); }
+
+        #metricsModal .metric-progress {
+            height: 4px;
+            margin-top: 2px;
+            overflow: hidden;
+            border-radius: 99px;
+            background: rgba(118, 152, 195, .18);
+        }
+
+        #metricsModal .metric-progress > span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #378eff, #54d8ff);
+            box-shadow: 0 0 10px rgba(71, 186, 255, .55);
+            transition: width .35s ease;
+        }
+
+        #metricsModal .metrics-details {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        #metricsModal .metric-section {
+            min-width: 0;
+            padding: 15px 16px 12px;
+            border: 1px solid rgba(93, 137, 198, .2);
+            border-radius: 13px;
+            background: linear-gradient(145deg, rgba(15, 29, 49, .86), rgba(9, 18, 33, .86));
+        }
+
+        #metricsModal .metric-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 9px;
+            color: #dbeaff;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        #metricsModal .metric-section-title i {
+            color: #63caff;
+            font-size: 12px;
+        }
+
+        #metricsModal .metric-row {
+            min-height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(104, 143, 194, .12);
+        }
+
+        #metricsModal .metric-row:last-child {
+            border-bottom: 0;
+        }
+
+        #metricsModal .metric-row-label {
+            flex: 0 1 44%;
+            color: #8ea3bf;
+            font-size: 11px;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+
+        #metricsModal .metric-row-value {
+            flex: 1 1 56%;
+            min-width: 0;
+            color: #dceaff;
+            font-family: var(--mono);
+            font-size: 11px;
+            line-height: 1.35;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        #metricsModal .metrics-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            border-top: 1px solid rgba(101, 147, 208, .18);
+            background: rgba(7, 14, 26, .6);
+        }
+
+        #metricsModal .metrics-updated {
+            margin-right: auto;
+            color: #8298b7;
+            font-size: 10px;
+        }
+
+        #metricsModal .metrics-footer .bookmark-modal-btn {
+            min-width: 104px;
+            border: 1px solid rgba(93, 141, 204, .32);
+            border-radius: 9px;
+        }
+
+        #metricsModal .metrics-footer .bookmark-modal-btn.primary {
+            border-color: rgba(55, 180, 246, .72);
+            color: #061321;
+            background: linear-gradient(135deg, #38aaff, #5bd9ff);
+            box-shadow: 0 5px 18px rgba(39, 151, 235, .17);
+        }
+
+        #metricsModal .metrics-footer .bookmark-modal-btn.primary:hover {
+            filter: brightness(1.1);
+        }
+
+        @media (max-width: 900px) {
+            #metricsModal .metrics-overview {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            #metricsModal .metrics-details {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            #metricsModal {
+                padding: 10px;
+            }
+
+            #metricsModal .metrics-shell {
+                width: 100%;
+                max-height: calc(100vh - 20px);
+                border-radius: 15px;
+            }
+
+            #metricsModal .metrics-header {
+                gap: 11px;
+                padding: 16px;
+            }
+
+            #metricsModal .metrics-header-icon {
+                width: 38px;
+                height: 38px;
+                flex-basis: 38px;
+                border-radius: 11px;
+            }
+
+            #metricsModal .metrics-header h3 {
+                font-size: 17px;
+            }
+
+            #metricsModal .metrics-header p {
+                font-size: 10px;
+            }
+
+            #metricsModal .metrics-live {
+                padding: 6px 8px;
+                font-size: 8px;
+            }
+
+            #metricsModal #metricsBody {
+                gap: 10px;
+                padding: 14px;
+            }
+
+            #metricsModal .metrics-overview {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            #metricsModal .metric-card {
+                min-height: 126px;
+                padding: 12px;
+            }
+
+            #metricsModal .metrics-details {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            #metricsModal .metrics-footer {
+                gap: 8px;
+                padding: 12px 14px;
+            }
+
+            #metricsModal .metrics-footer .bookmark-modal-btn {
+                min-width: 0;
+                padding: 9px 12px;
+            }
+        }
+
         .bookmark-modal h3 {
             color: var(--tx);
             font-size: 18px;
@@ -3189,7 +3600,7 @@
             background: var(--surface);
         }
 
-        
+
         .settings-section {
             display: none;
             flex-direction: column;
@@ -3224,6 +3635,257 @@
 
         .settings-card-body {
             padding: 18px 18px 14px;
+        }
+
+        #settingsPage .settings-content {
+            background:
+                radial-gradient(ellipse at 88% 4%, rgba(55, 122, 224, .08), transparent 38%),
+                linear-gradient(145deg, rgba(7, 12, 23, .88), rgba(8, 13, 24, .68));
+            scrollbar-color: rgba(79, 139, 222, .55) transparent;
+        }
+
+        #settingsPage .settings-section {
+            gap: 20px;
+            max-width: 1120px;
+            width: 100%;
+            align-self: center;
+            animation: settings-section-in .22s ease-out both;
+        }
+
+        @keyframes settings-section-in {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #settingsPage .settings-card {
+            background: linear-gradient(145deg, rgba(15, 26, 45, .96), rgba(9, 17, 31, .96));
+            border: 1px solid rgba(94, 138, 202, .24);
+            border-radius: 15px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, .2), inset 0 1px 0 rgba(160, 195, 255, .035);
+            transition: border-color .18s, box-shadow .18s, transform .18s;
+        }
+
+        #settingsPage .settings-card:hover {
+            border-color: rgba(87, 157, 245, .4);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, .24), 0 0 20px rgba(31, 105, 203, .08);
+        }
+
+        #settingsPage .settings-card-head {
+            min-height: 48px;
+            padding: 13px 18px;
+            color: #e9f2ff;
+            background: linear-gradient(100deg, rgba(25, 46, 77, .72), rgba(12, 23, 41, .56));
+            border-bottom-color: rgba(96, 139, 204, .2);
+            letter-spacing: .015em;
+        }
+
+        #settingsPage .settings-card-head i {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(72, 166, 255, .2);
+            border-radius: 8px;
+            background: rgba(40, 119, 213, .12);
+            color: #59caff;
+            filter: drop-shadow(0 0 5px rgba(58, 167, 255, .16));
+        }
+
+        #settingsPage .settings-card-body {
+            padding: 16px;
+        }
+
+        #settingsPage .settings-switch-row {
+            min-height: 64px;
+            padding: 12px 14px;
+            gap: 18px;
+            border: 1px solid rgba(95, 136, 196, .17);
+            border-radius: 11px;
+            background: linear-gradient(105deg, rgba(19, 33, 54, .78), rgba(12, 22, 39, .72));
+            box-shadow: inset 0 1px 0 rgba(161, 196, 255, .025);
+            transition: border-color .16s, background .16s, box-shadow .16s, transform .16s;
+        }
+
+        #settingsPage .settings-switch-row:hover {
+            border-color: rgba(83, 156, 242, .4);
+            background: linear-gradient(105deg, rgba(24, 47, 77, .88), rgba(13, 27, 48, .82));
+            box-shadow: inset 0 1px 0 rgba(161, 196, 255, .04), 0 5px 16px rgba(0, 0, 0, .14);
+            transform: translateY(-1px);
+        }
+
+        #settingsPage .settings-switch-row + .settings-switch-row {
+            margin-top: 10px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(95, 136, 196, .17);
+        }
+
+        #settingsPage .settings-switch-label {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .005em;
+            color: #edf4ff;
+        }
+
+        #settingsPage .settings-hint {
+            max-width: 760px;
+            font-size: 11.5px;
+            line-height: 1.55;
+            color: #91a5c3;
+        }
+
+        #settingsPage .settings-switch-track {
+            width: 46px;
+            height: 26px;
+            border-color: rgba(105, 143, 194, .35);
+            background: rgba(5, 12, 24, .82);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .26);
+        }
+
+        #settingsPage .settings-switch-thumb {
+            width: 18px;
+            height: 18px;
+            top: 3px;
+            left: 3px;
+            background: #8ca1c0;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
+        }
+
+        #settingsPage .settings-switch.on .settings-switch-track {
+            background: rgba(24, 147, 206, .25);
+            border-color: rgba(54, 192, 246, .58);
+            box-shadow: inset 0 0 12px rgba(35, 159, 221, .11), 0 0 10px rgba(39, 157, 225, .08);
+        }
+
+        #settingsPage .settings-switch.on .settings-switch-thumb {
+            left: 23px;
+            background: #4ed5ff;
+            box-shadow: 0 0 9px rgba(62, 198, 255, .48);
+        }
+
+        #settingsPage .settings-card-body > div:has(> .settings-switch-label) {
+            padding: 13px 14px;
+            border: 1px solid rgba(95, 136, 196, .17);
+            border-radius: 11px;
+            background: linear-gradient(105deg, rgba(19, 33, 54, .78), rgba(12, 22, 39, .72));
+            transition: border-color .16s, background .16s, box-shadow .16s;
+        }
+
+        #settingsPage .settings-card-body > div:has(> .settings-switch-label):hover {
+            border-color: rgba(83, 156, 242, .38);
+            background: linear-gradient(105deg, rgba(24, 47, 77, .84), rgba(13, 27, 48, .78));
+            box-shadow: 0 5px 16px rgba(0, 0, 0, .12);
+        }
+
+        #settingsPage .settings-card-body > .settings-switch-row + div:has(> .settings-switch-label) {
+            margin-top: 10px !important;
+        }
+
+        #settingsPage #shortcutsList > div:has(.shortcut-display) {
+            min-height: 52px;
+            padding: 7px 9px;
+            border: 1px solid rgba(95, 136, 196, .16);
+            border-radius: 9px;
+            background: rgba(15, 28, 47, .65);
+            transition: border-color .16s, background .16s;
+        }
+
+        #settingsPage #shortcutsList > div:has(.shortcut-display):hover {
+            border-color: rgba(83, 156, 242, .38);
+            background: rgba(21, 42, 69, .82);
+        }
+
+        #settingsPage .shortcut-display,
+        #settingsPage #shortcutsList code {
+            border-color: rgba(76, 144, 224, .28) !important;
+            background: rgba(6, 14, 27, .8) !important;
+            color: #93dfff !important;
+        }
+
+        #settingsPage .settings-input,
+        #settingsPage select.settings-input,
+        #settingsPage textarea.settings-input {
+            border-color: rgba(97, 139, 199, .28);
+            border-radius: 9px;
+            background: rgba(5, 12, 24, .72);
+            color: #edf4ff;
+            transition: border-color .16s, box-shadow .16s, background .16s;
+        }
+
+        #settingsPage .settings-input:focus {
+            border-color: rgba(67, 199, 255, .72);
+            background: rgba(7, 16, 31, .92);
+            box-shadow: 0 0 0 3px rgba(67, 199, 255, .1);
+        }
+
+        #settingsPage .settings-btn-icon {
+            border-color: rgba(95, 142, 208, .28);
+            background: rgba(18, 33, 54, .85);
+            color: #b9d7f7;
+        }
+
+        #settingsPage .settings-btn-icon:hover:not(:disabled) {
+            border-color: rgba(67, 199, 255, .58);
+            background: rgba(34, 76, 126, .58);
+            color: #8fe2ff;
+            box-shadow: 0 0 14px rgba(44, 152, 238, .12);
+        }
+
+        #settingsPage .settings-slider {
+            background: linear-gradient(90deg, rgba(58, 130, 213, .44), rgba(73, 196, 244, .82));
+        }
+
+        #settingsPage .settings-engine-btn {
+            border-color: rgba(95, 136, 196, .2);
+            border-radius: 10px;
+            background: rgba(15, 28, 47, .62);
+        }
+
+        #settingsPage .settings-engine-btn:hover,
+        #settingsPage .settings-engine-btn.active {
+            border-color: rgba(67, 199, 255, .56);
+            background: linear-gradient(105deg, rgba(23, 74, 127, .55), rgba(16, 38, 69, .75));
+            box-shadow: 0 0 15px rgba(42, 141, 225, .1);
+        }
+
+        #settingsPage .settings-btn-danger {
+            border-radius: 9px;
+        }
+
+        #settingsPage .settings-section hr {
+            border-top-color: rgba(95, 136, 196, .2) !important;
+        }
+
+        #settingsPage .settings-card :is(button, input, select, textarea):focus-visible {
+            outline: 2px solid rgba(67, 199, 255, .76);
+            outline-offset: 2px;
+        }
+
+        @media (max-width: 760px) {
+            #settingsPage .settings-content {
+                padding: 22px 16px !important;
+                gap: 20px !important;
+            }
+
+            #settingsPage .settings-card-body {
+                padding: 12px;
+            }
+
+            #settingsPage .settings-switch-row {
+                gap: 10px;
+                padding: 11px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #settingsPage .settings-section {
+                animation: none;
+            }
+
+            #settingsPage .settings-card,
+            #settingsPage .settings-switch-row,
+            #settingsPage .settings-card-body > div:has(> .settings-switch-label) {
+                transition: none;
+            }
         }
 
         .settings-label {
@@ -3522,40 +4184,147 @@
         .settings-nav-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 9px 14px;
-            border-radius: 8px;
-            border: none;
+            gap: 12px;
+            min-height: 39px;
+            padding: 8px 10px;
+            position: relative;
+            border-radius: 9px;
+            border: 1px solid transparent;
             background: transparent;
-            color: var(--tx3);
+            color: #bcc8e4;
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
             text-align: left;
             width: 100%;
-            transition: background .12s, color .12s;
+            transition: background .16s, border-color .16s, color .16s, box-shadow .16s;
+        }
+
+        .settings-sidebar {
+            box-shadow: inset 2px 0 0 rgba(39, 126, 255, .64), 10px 0 28px rgba(0, 0, 0, .16);
+        }
+
+        .settings-nav-heading {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin: 0 4px 5px;
+            padding: 0 9px 6px;
+            color: #7485aa;
+            border-bottom: 1px solid rgba(94, 125, 184, .2);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: .2em;
+            line-height: 1.3;
+            text-transform: uppercase;
+        }
+
+        .settings-nav-heading::before {
+            content: "";
+            width: 2px;
+            height: 11px;
+            border-radius: 2px;
+            background: #318dff;
+            box-shadow: 0 0 9px rgba(49, 141, 255, .65);
+        }
+
+        .settings-nav-heading:not(:first-child) {
+            margin-top: 2px;
         }
 
         .settings-nav-item i {
-            width: 16px;
+            width: 18px;
+            flex: 0 0 18px;
             text-align: center;
-            font-size: 13px;
-            transition: transform .22s cubic-bezier(.34,1.56,.64,1), color .12s;
+            font-size: 15px;
+            transition: transform .22s cubic-bezier(.34,1.56,.64,1), color .12s, filter .16s;
             will-change: transform;
         }
 
+        .settings-nav-item span {
+            flex: 1;
+        }
+
+        .settings-nav-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 7px;
+            bottom: 7px;
+            width: 2px;
+            border-radius: 0 2px 2px 0;
+            background: #28a9ff;
+            opacity: 0;
+            box-shadow: 0 0 10px rgba(40, 169, 255, .9);
+            transition: opacity .16s;
+        }
+
+        .settings-nav-item::after {
+            content: "\f105";
+            font-family: "Font Awesome 6 Free";
+            font-size: 13px;
+            font-weight: 900;
+            color: #627395;
+            transition: color .16s, transform .16s;
+        }
+
         .settings-nav-item:hover {
-            background: var(--surface);
-            color: var(--tx2);
+            background: rgba(28, 68, 133, .2);
+            border-color: rgba(80, 132, 221, .22);
+            color: #e7efff;
+            box-shadow: inset 0 0 18px rgba(29, 88, 186, .1);
+        }
+
+        .settings-nav-item:hover::after {
+            color: #78caff;
+            transform: translateX(2px);
         }
 
         .settings-nav-item.active {
-            background: rgba(157, 229, 255, 0.1);
-            color: var(--ac);
+            background: linear-gradient(100deg, rgba(18, 93, 198, .4), rgba(18, 48, 104, .28));
+            border-color: rgba(57, 144, 255, .58);
+            color: #eef6ff;
+            box-shadow: inset 0 0 18px rgba(26, 104, 224, .16), 0 0 13px rgba(22, 105, 231, .13);
+        }
+
+        .settings-nav-item.active::before {
+            opacity: 1;
+        }
+
+        .settings-nav-item.active::after {
+            color: #47c8ff;
         }
 
         .settings-nav-item.active i {
-            color: var(--ac);
+            color: #4dcaff;
+            filter: drop-shadow(0 0 5px rgba(55, 190, 255, .65));
+        }
+
+        .settings-nav-item:focus-visible {
+            outline: 2px solid #54bfff;
+            outline-offset: 2px;
+        }
+
+        .settings-nav-item[data-section="connection"] i,
+        .settings-nav-item[data-section="language"] i { color: #9875ff; }
+        .settings-nav-item[data-section="aiassistant"] i,
+        .settings-nav-item[data-section="appearance"] i,
+        .settings-nav-item[data-section="about"] i { color: #df76ff; }
+        .settings-nav-item[data-section="search"] i,
+        .settings-nav-item[data-section="filesandmedia"] i,
+        .settings-nav-item[data-section="tutorial"] i { color: #4ebcff; }
+        .settings-nav-item[data-section="privacy"] i { color: #42d8c1; }
+        .settings-nav-item[data-section="cache"] i { color: #8c79ff; }
+        .settings-nav-item[data-section="homescreen"] i { color: #28c9d9; }
+        .settings-nav-item[data-section="shortcuts"] i { color: #ffb44d; }
+        .settings-nav-item[data-section="fallback"] i { color: #c1cee9; }
+
+        .settings-nav-item.active i {
+            color: #4dcaff;
+        }
+
+        .settings-nav-item:hover i {
+            filter: drop-shadow(0 0 5px currentColor);
         }
 
         /* ── Per-icon hover animations ── */
@@ -3691,6 +4460,62 @@
             height: 8px;
             border-radius: 4px;
             background: transparent;
+        }
+
+        .settings-slider {
+            height: 24px;
+            background: transparent !important;
+            touch-action: pan-y;
+        }
+
+        .settings-slider:focus-visible {
+            outline: 2px solid rgba(91, 198, 255, .85);
+            outline-offset: 3px;
+            border-radius: 999px;
+        }
+
+        .settings-slider::-webkit-slider-runnable-track {
+            height: 10px;
+            border: 1px solid rgba(139, 165, 199, .62);
+            border-radius: 999px;
+            background: linear-gradient(180deg, rgba(9, 17, 29, .96), rgba(24, 39, 59, .96));
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .62), 0 1px 0 rgba(206, 224, 248, .06);
+        }
+
+        .settings-slider::-moz-range-track {
+            height: 10px;
+            border: 1px solid rgba(139, 165, 199, .62);
+            border-radius: 999px;
+            background: linear-gradient(180deg, rgba(9, 17, 29, .96), rgba(24, 39, 59, .96));
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .62), 0 1px 0 rgba(206, 224, 248, .06);
+        }
+
+        .settings-slider::-webkit-slider-thumb {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e9f7ff;
+            background: linear-gradient(145deg, #78ddff, #278fda);
+            box-shadow: 0 0 0 2px rgba(7, 15, 27, .96), 0 0 0 4px rgba(76, 183, 244, .36), 0 3px 8px rgba(0, 0, 0, .55);
+        }
+
+        .settings-slider::-webkit-slider-thumb:hover,
+        .settings-slider::-webkit-slider-thumb:active {
+            background: linear-gradient(145deg, #a3eaff, #39a9f2);
+            box-shadow: 0 0 0 2px rgba(7, 15, 27, .96), 0 0 0 5px rgba(76, 183, 244, .48), 0 3px 9px rgba(0, 0, 0, .55);
+        }
+
+        .settings-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e9f7ff;
+            background: linear-gradient(145deg, #78ddff, #278fda);
+            box-shadow: 0 0 0 2px rgba(7, 15, 27, .96), 0 0 0 4px rgba(76, 183, 244, .36), 0 3px 8px rgba(0, 0, 0, .55);
+        }
+
+        .settings-slider::-moz-range-thumb:hover,
+        .settings-slider::-moz-range-thumb:active {
+            background: linear-gradient(145deg, #a3eaff, #39a9f2);
+            box-shadow: 0 0 0 2px rgba(7, 15, 27, .96), 0 0 0 5px rgba(76, 183, 244, .48), 0 3px 9px rgba(0, 0, 0, .55);
         }
 
         .bookmark-btn-disabled {
@@ -4176,7 +5001,7 @@
 
         /* Allowlist in settings — uses textarea like the filter list */
 
-        
+
         .nt-search-engine {
             width: fit-content;
             min-width: 110px;
@@ -4252,7 +5077,7 @@
             border-color: rgba(157, 229, 255, 0.2);
         }
 
-        
+
         #tutorialCard button:hover {
             filter: brightness(1.15);
         }
@@ -4273,6 +5098,406 @@
             border-radius: 50%;
             pointer-events: none;
             z-index: 1;
+        }
+
+        .tab {
+            position: relative;
+            border-color: rgba(105, 141, 191, .32);
+        }
+
+        .tab.active {
+            background: linear-gradient(145deg, rgba(23, 43, 70, .98), rgba(13, 27, 47, .98));
+            border-color: rgba(69, 186, 255, .72);
+            box-shadow: inset 0 1px 0 rgba(190, 225, 255, .08), 0 3px 14px rgba(22, 112, 201, .16);
+        }
+
+        .tab:focus-visible,
+        .tab-add:focus-visible,
+        .tab-close:focus-visible {
+            outline: 2px solid var(--ac);
+            outline-offset: 2px;
+        }
+
+        .tab-close:hover {
+            background: rgba(255, 100, 116, .16);
+            color: #ff8998;
+        }
+
+        .tab-add {
+            border: 1px solid transparent;
+            border-radius: 10px;
+            transition: color .14s, background .14s, border-color .14s, transform .14s;
+        }
+
+        .tab-add:hover {
+            transform: translateY(-1px);
+            background: rgba(48, 145, 237, .14);
+            box-shadow: 0 4px 14px rgba(34, 125, 218, .14);
+        }
+
+        .navbar :is(.nav-btn, .tool-btn, .omni-btn):focus-visible,
+        .toolbar-actions :is(button, [role="button"]):focus-visible {
+            outline: 2px solid rgba(75, 190, 255, .85);
+            outline-offset: 2px;
+        }
+
+        .navbar :is(.nav-btn, .tool-btn, .omni-btn):not(:disabled):hover {
+            box-shadow: 0 3px 12px rgba(40, 132, 220, .12);
+        }
+
+        .navbar :is(.nav-btn, .tool-btn).active {
+            color: #75d7ff;
+            background: rgba(45, 135, 220, .16);
+            box-shadow: inset 0 0 0 1px rgba(77, 181, 255, .25);
+        }
+
+        .nt-brand {
+            color: #eaf5ff;
+            text-shadow: 0 8px 36px rgba(23, 138, 255, .22);
+        }
+
+        .nt-search {
+            gap: 8px;
+            padding: 7px;
+            border: 1px solid rgba(117, 165, 225, .2);
+            border-radius: 999px;
+            background: rgba(9, 18, 32, .58);
+            box-shadow: 0 14px 42px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(198, 226, 255, .06);
+            backdrop-filter: blur(16px);
+        }
+
+        .nt-search:focus-within {
+            border-color: rgba(74, 190, 255, .52);
+            box-shadow: 0 0 0 3px rgba(53, 154, 235, .1), 0 16px 46px rgba(0, 0, 0, .28);
+        }
+
+        .nt-search input {
+            border-color: rgba(108, 148, 198, .18);
+            background: rgba(11, 20, 35, .78);
+        }
+
+        .nt-search-engine {
+            border-color: rgba(108, 148, 198, .2);
+            background: rgba(18, 32, 52, .82);
+        }
+
+        .nt-search button {
+            box-shadow: 0 4px 14px rgba(47, 156, 228, .22);
+        }
+
+        .nt-favorites {
+            max-width: min(820px, 100%);
+            gap: 14px;
+        }
+
+        .nt-fav-box {
+            min-width: 92px;
+            border-color: rgba(111, 153, 205, .25);
+            background: linear-gradient(145deg, rgba(20, 34, 54, .76), rgba(11, 20, 34, .68));
+            box-shadow: inset 0 1px 0 rgba(192, 220, 255, .04);
+        }
+
+        .nt-fav-box:hover {
+            transform: translateY(-3px);
+            border-color: rgba(75, 190, 255, .62);
+            background: linear-gradient(145deg, rgba(28, 65, 101, .86), rgba(15, 34, 57, .82));
+            box-shadow: 0 10px 26px rgba(0, 0, 0, .24), 0 0 18px rgba(36, 141, 220, .12);
+        }
+
+        .settings-search-wrap {
+            position: relative;
+            flex: 0 0 auto;
+            margin: 0 12px 10px;
+        }
+
+        .settings-search-wrap > i {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            color: #7892b7;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        #settingsSearch {
+            width: 100%;
+            height: 38px;
+            padding: 0 12px 0 34px;
+            border: 1px solid rgba(91, 137, 199, .3);
+            border-radius: 10px;
+            outline: none;
+            color: #e9f3ff;
+            background: rgba(13, 25, 43, .86);
+            font-size: 12px;
+            transition: border-color .15s, box-shadow .15s, background .15s;
+        }
+
+        #settingsSearch::placeholder { color: #7890af; }
+
+        #settingsSearch:focus {
+            border-color: rgba(70, 184, 255, .7);
+            background: rgba(15, 30, 51, .98);
+            box-shadow: 0 0 0 3px rgba(55, 158, 236, .12);
+        }
+
+        .settings-search-status {
+            min-height: 14px;
+            margin: 5px 2px 0;
+            color: #8298b7;
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        .settings-nav-item[hidden] { display: none !important; }
+
+        @media (max-width: 760px) {
+            .titlebar { gap: 6px; padding: 6px 8px; }
+            .tab { flex: 0 0 clamp(92px, 30vw, 138px); min-width: 92px; max-width: 138px; }
+            .navbar { flex-wrap: wrap; gap: 5px; padding: 6px 8px; }
+            .navbar > .omnibox { order: 2; flex: 1 1 100%; }
+            .navbar .nav-btn, .navbar .tool-btn { flex-shrink: 0; }
+            .nt-content { gap: 16px; padding: 18px 14px; }
+            .nt-content { overflow-y: auto; }
+            .nt-brand { font-size: clamp(2.8rem, 11vw, 4.5rem); }
+            .nt-brand i { font-size: .9em; }
+            .nt-search { width: min(700px, 100%); }
+            .nt-favorites { gap: 9px; padding-bottom: 20px; }
+        }
+
+        @media (max-width: 540px) {
+            #settingsPage > div[style*="flex-direction:row"] { flex-direction: column !important; }
+            #settingsPage .settings-sidebar {
+                width: 100% !important;
+                min-width: 0 !important;
+                height: auto !important;
+                max-height: 158px;
+                padding: 8px 0 !important;
+                border-right: 0 !important;
+                border-bottom: 1px solid rgba(73, 119, 201, .24);
+            }
+            #settingsPage .settings-sidebar nav {
+                height: auto !important;
+                min-height: 0 !important;
+                flex-direction: row !important;
+                align-items: center;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 0 8px !important;
+                gap: 6px !important;
+            }
+            #settingsPage .settings-sidebar nav > div:first-child {
+                flex: 0 0 auto;
+                flex-direction: row !important;
+                overflow: visible !important;
+            }
+            #settingsPage .settings-sidebar nav .settings-nav-heading,
+            #settingsPage .settings-sidebar nav hr { display: none; }
+            #settingsPage .settings-nav-item {
+                flex: 0 0 auto;
+                width: auto;
+                min-height: 36px;
+                padding: 7px 10px;
+                font-size: 11px;
+            }
+            #settingsPage .settings-content {
+                min-height: 0;
+                width: 100%;
+                padding: 16px 12px !important;
+            }
+            #settingsPage .settings-search-wrap { min-width: 176px; margin: 0 0 0 4px; }
+            .nt-header { padding: 14px 16px; }
+            .nt-time, .nt-date { font-size: 13px; }
+            .nt-search { flex-wrap: wrap; border-radius: 18px; }
+            .nt-search-engine { height: 38px; }
+            .nt-search input { min-width: 0; height: 38px; }
+            .nt-search button { height: 38px; padding: 0 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .tab, .tab-add, .nt-fav-box, .navbar :is(.nav-btn, .tool-btn, .omni-btn) { transition: none !important; }
+        }
+
+        .bookmarks-bar {
+            gap: 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(83, 148, 222, .45) transparent;
+        }
+
+        .bookmark {
+            max-width: 180px;
+            min-height: 34px;
+            border-color: rgba(103, 144, 198, .28) !important;
+            background: rgba(17, 30, 49, .44);
+            transition: background .14s, border-color .14s, color .14s, transform .14s;
+        }
+
+        .bookmark:hover {
+            transform: translateY(-1px);
+            border-color: rgba(71, 181, 255, .56) !important;
+            background: rgba(35, 82, 132, .35);
+        }
+
+        .bookmark-add {
+            border-style: dashed !important;
+            color: #9bc8f2;
+        }
+
+        .bookmark-delete {
+            background: rgba(12, 21, 34, .95);
+        }
+
+        .bookmarks-toggle {
+            position: sticky;
+            right: 0;
+            background: rgba(10, 19, 32, .96);
+            box-shadow: -8px 0 14px rgba(8, 14, 24, .55);
+        }
+
+        #historyPopup .site-info-box {
+            width: min(380px, calc(100vw - 16px)) !important;
+            border-color: rgba(91, 151, 229, .34);
+            background: linear-gradient(145deg, #111e31, #0b1422);
+        }
+
+        #historyList {
+            max-height: min(420px, calc(100vh - 210px));
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(80, 139, 214, .45) transparent;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            min-height: 40px;
+            padding: 8px 10px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            color: #c5d7ed;
+            background: transparent;
+            cursor: pointer;
+            text-align: left;
+            font-size: 12px;
+            transition: background .14s, border-color .14s, color .14s, transform .15s, opacity .15s;
+        }
+
+        .history-item:hover {
+            color: #f0f7ff;
+            border-color: rgba(75, 164, 238, .2);
+            background: rgba(37, 93, 151, .23) !important;
+        }
+
+        .history-item:focus-visible { outline: 2px solid #56c9ff; outline-offset: -2px; }
+        .history-item-icon { width: 16px; flex: 0 0 16px; color: #70c7f5; text-align: center; }
+        .history-item-host { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .history-item-time { flex: 0 0 auto; color: #8da3c0; font-size: 10px; white-space: nowrap; }
+
+        .context-menu,
+        .tab-context-menu {
+            padding: 7px;
+            border-color: rgba(97, 145, 208, .38);
+            border-radius: 13px;
+            background: linear-gradient(145deg, rgba(18, 31, 50, .98), rgba(9, 17, 29, .99));
+            box-shadow: 0 18px 48px rgba(0, 0, 0, .52), 0 0 22px rgba(29, 110, 193, .1);
+            backdrop-filter: blur(18px);
+        }
+
+        .context-menu-item,
+        .tab-ctx-item {
+            min-height: 36px;
+            border-radius: 8px;
+            transition: background .13s, color .13s, transform .13s;
+        }
+
+        .context-menu-item:hover,
+        .tab-ctx-item:hover {
+            color: #eff8ff;
+            background: rgba(44, 113, 179, .24);
+        }
+
+        .context-menu-item:focus-visible,
+        .tab-ctx-item:focus-visible,
+        .site-info-btn:focus-visible,
+        .bookmark:focus-visible,
+        .bookmark-delete:focus-visible,
+        .overlay-err-btn:focus-visible {
+            outline: 2px solid #56c9ff;
+            outline-offset: 2px;
+        }
+
+        .context-menu-item.danger:hover,
+        .tab-ctx-item.danger:hover { background: rgba(195, 62, 83, .16); }
+
+        .site-info-box,
+        .bookmark-modal-content,
+        .find-bar {
+            border-color: rgba(100, 145, 207, .36);
+            box-shadow: 0 18px 52px rgba(0, 0, 0, .54), 0 0 22px rgba(34, 116, 200, .09);
+        }
+
+        .site-info-btn:hover,
+        .bookmark-modal-btn:hover { border-color: rgba(74, 181, 255, .45); }
+
+        .progress-wrap {
+            background: rgba(7, 14, 25, .9);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .26);
+        }
+
+        .progress-bar {
+            box-shadow: 0 0 10px rgba(74, 188, 255, .32);
+        }
+
+        .progress-bar.done { box-shadow: 0 0 9px rgba(89, 225, 161, .28); }
+        .progress-bar.error { box-shadow: 0 0 10px rgba(255, 112, 133, .36); }
+        .status-pill { border-color: rgba(99, 145, 202, .28); background: rgba(14, 25, 41, .78); }
+        .status-pill .status-dot.active { box-shadow: 0 0 10px rgba(74, 190, 255, .7); }
+        .status-pill .status-dot.idle { box-shadow: 0 0 8px rgba(101, 224, 173, .45); }
+        .status-pill .status-dot.error { box-shadow: 0 0 9px rgba(255, 112, 133, .6); }
+
+        .overlay:not(.splash) {
+            background: rgba(5, 11, 20, .74);
+            backdrop-filter: blur(8px);
+        }
+
+        .overlay .spinner {
+            width: 38px;
+            height: 38px;
+            border-width: 3px;
+            border-color: rgba(108, 164, 222, .2);
+            border-top-color: #65d1ff;
+            box-shadow: 0 0 22px rgba(61, 171, 239, .16);
+        }
+
+        .overlay.error .overlay-card {
+            border-color: rgba(255, 125, 144, .34);
+            background: linear-gradient(145deg, rgba(27, 35, 50, .98), rgba(17, 22, 34, .98));
+            box-shadow: 0 22px 72px rgba(0, 0, 0, .48), 0 0 30px rgba(206, 71, 92, .1);
+        }
+
+        html:not([data-skin]) :is(button, a, input, select, textarea, [tabindex]):focus-visible {
+            outline: 2px solid #62cfff;
+            outline-offset: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .bookmarks-bar { padding: 5px 7px; gap: 6px; }
+            .bookmark { max-width: 148px; min-height: 32px; padding-left: 9px; }
+            #historyPopup .site-info-box { width: min(380px, calc(100vw - 16px)) !important; }
+            .context-menu, .tab-context-menu { max-width: calc(100vw - 16px); }
+            .overlay.error .overlay-card { width: calc(100vw - 28px); padding: 24px 18px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
         }
     </style>
     <style id="skinStyles">
@@ -4462,7 +5687,7 @@
         html[data-skin="firefox"] .tool-btn { border-radius: 6px !important; width: 32px; height: 32px; color: #cfcfd8; }
         html[data-skin="firefox"] .tool-btn:hover, html[data-skin="firefox"] .nav-btn:hover:not(:disabled) { background: rgba(255, 255, 255, .11); }
         html[data-skin="firefox"] #home, html[data-skin="firefox"] #findOmniBtn, html[data-skin="firefox"] #go,
-        html[data-skin="firefox"] #devToggle, html[data-skin="firefox"] #codeBtn, html[data-skin="firefox"] #aiBtn,
+        html[data-skin="firefox"] #devToggle, html[data-skin="firefox"] #aiBtn,
         html[data-skin="firefox"] #blockToggle, html[data-skin="firefox"] #showBookmarksBtn { display: none !important; }
         html[data-skin="firefox"] #skinPuzzleBtn { display: grid; }
         html[data-skin="firefox"] .omnibox { background: #42414d; border-radius: 6px; height: 32px; border: 1px solid transparent; margin: 0 4px; }
@@ -4547,7 +5772,6 @@
         html[data-skin="operagx"] #aiBtn,
         html[data-skin="operagx"] #devToggle,
         html[data-skin="operagx"] #findOmniBtn,
-        html[data-skin="operagx"] #codeBtn { display: none !important; }
 
         /* GX titlebar buttons (O-menu + GX Corner) */
         .gx-topbtn {
@@ -4852,7 +6076,7 @@
         html[data-skin="chrome"] .tool-btn { border-radius: 50% !important; width: 34px; height: 34px; color: #c6d2d8; }
         html[data-skin="chrome"] .tool-btn:hover { background: rgba(255, 255, 255, .1); }
         html[data-skin="chrome"] #home, html[data-skin="chrome"] #findOmniBtn, html[data-skin="chrome"] #go,
-        html[data-skin="chrome"] #devToggle, html[data-skin="chrome"] #codeBtn, html[data-skin="chrome"] #aiBtn,
+        html[data-skin="chrome"] #devToggle, html[data-skin="chrome"] #aiBtn,
         html[data-skin="chrome"] #blockToggle, html[data-skin="chrome"] #showBookmarksBtn { display: none !important; }
         html[data-skin="chrome"] .omnibox {
             background: #222b30; height: 34px; border: none; margin: 0 6px;
@@ -4956,7 +6180,7 @@
 
         /* ── Chrome NTP (dark, reference-exact) ── */
         #newtab.skin-ntp .nt-content, #newtab.skin-ntp #gustCredit,
-        #newtab.skin-ntp .nt-wallpaper-btn, #newtab.skin-ntp #ntGithubBtn { display: none !important; }
+        #newtab.skin-ntp .nt-wallpaper-btn { display: none !important; }
         #newtab.skin-ntp .nt-overlay { display: none; }
         #skinNTP { display: none; position: absolute; inset: 0; z-index: 5; overflow: auto; }
         #newtab.skin-ntp #skinNTP { display: block; }
@@ -5191,7 +6415,7 @@
         html[data-skin="brave"] .nav-btn:disabled { opacity: 1; color: #565a66; }
         html[data-skin="brave"] .tool-btn { width: 34px; height: 34px; color: #c3c6cf; }
         html[data-skin="brave"] #home, html[data-skin="brave"] #findOmniBtn, html[data-skin="brave"] #go,
-        html[data-skin="brave"] #devToggle, html[data-skin="brave"] #codeBtn, html[data-skin="brave"] #aiBtn,
+        html[data-skin="brave"] #devToggle, html[data-skin="brave"] #aiBtn,
         html[data-skin="brave"] #blockToggle, html[data-skin="brave"] #showBookmarksBtn { display: none !important; }
         html[data-skin="brave"] #skinPuzzleBtn { display: grid; }
         html[data-skin="brave"] .omnibox { background: var(--sk-field); height: 34px; border: none; margin: 0 6px; }
@@ -5749,6 +6973,253 @@
         #extStorePage .xs-inst-row { display: flex; align-items: center; gap: 11px; background: var(--bg1, #181c21); border: 1px solid var(--bd, #252b33); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
         #extStorePage .xs-inst-row .xs-ico { width: 30px; height: 30px; }
         #extStorePage .xs-inst-row .xs-ico img { width: 30px; height: 30px; }
+        #extStorePage {
+            background:
+                radial-gradient(ellipse at 92% 0%, rgba(42, 127, 218, .14), transparent 36%),
+                linear-gradient(145deg, #080f1c, #070b14 70%);
+        }
+        #extStorePage .xs-wrap { max-width: 1240px; padding: 38px 32px 72px; }
+        #extStorePage .xs-head { gap: 16px; margin-bottom: 26px; }
+        #extStorePage .xs-logo {
+            width: 48px; height: 48px; border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(38, 143, 227, .22), inset 0 1px 0 rgba(255,255,255,.26);
+        }
+        #extStorePage .xs-title { font-size: 24px; letter-spacing: -.025em; }
+        #extStorePage .xs-title small { margin-top: 5px; line-height: 1.5; }
+        #extStorePage .xs-search {
+            height: 48px; border-color: rgba(100, 151, 212, .28); border-radius: 13px;
+            background: rgba(14, 27, 46, .85); transition: border-color .16s, box-shadow .16s, background .16s;
+        }
+        #extStorePage .xs-search:focus-within {
+            border-color: rgba(69, 188, 255, .7); background: rgba(15, 31, 52, .98);
+            box-shadow: 0 0 0 3px rgba(48, 147, 229, .13);
+        }
+        #extStorePage .xs-btn { height: 46px; border-color: rgba(100, 151, 212, .25); border-radius: 12px; transition: transform .14s, border-color .14s, background .14s, box-shadow .14s; }
+        #extStorePage .xs-btn:hover { transform: translateY(-1px); border-color: rgba(82, 180, 250, .48); box-shadow: 0 5px 16px rgba(0,0,0,.2); }
+        #extStorePage .xs-btn.primary { color: #061321; box-shadow: 0 5px 18px rgba(36, 146, 232, .2); }
+        #extStorePage .xs-note { padding: 12px 14px; border: 1px solid rgba(84, 128, 184, .18); border-radius: 11px; background: rgba(15, 29, 48, .55); }
+        #extStorePage .xs-sec { margin-top: 28px; color: #b7cce8; font-size: 11px; letter-spacing: .12em; }
+        #extStorePage .xs-grid { gap: 15px; }
+        #extStorePage .xs-card {
+            min-height: 150px; padding: 17px; gap: 13px;
+            border-color: rgba(94, 140, 198, .22); border-radius: 15px;
+            background: linear-gradient(145deg, rgba(17, 32, 53, .94), rgba(10, 19, 33, .96));
+            box-shadow: inset 0 1px 0 rgba(189, 218, 255, .04);
+            transition: transform .16s, border-color .16s, box-shadow .16s;
+        }
+        #extStorePage .xs-card:hover { transform: translateY(-3px); border-color: rgba(70, 178, 251, .46); box-shadow: 0 14px 34px rgba(0,0,0,.25), 0 0 18px rgba(43, 144, 226, .1); }
+        #extStorePage .xs-ico { border: 1px solid rgba(103, 154, 213, .18); border-radius: 12px; background: linear-gradient(145deg, rgba(39, 71, 109, .65), rgba(16, 30, 50, .9)); }
+        #extStorePage .xs-cname { font-size: 15px; line-height: 1.4; }
+        #extStorePage .xs-cmeta { margin-top: 5px; font-size: 12px; }
+        #extStorePage .xs-add, #extStorePage .xs-open { height: 36px; border-radius: 9px; transition: transform .14s, filter .14s, border-color .14s, background .14s; }
+        #extStorePage .xs-add { color: #061321; background: linear-gradient(135deg, #43b9ff, #60d8ff); }
+        #extStorePage .xs-add:hover, #extStorePage .xs-open:hover { transform: translateY(-1px); }
+        #extStorePage .xs-add.installed { color: #06241c; background: linear-gradient(135deg, #5de0bb, #7af0c7); }
+        #extStorePage :is(button, input, a):focus-visible { outline: 2px solid #62cfff; outline-offset: 2px; }
+        @media (max-width: 600px) {
+            #extStorePage .xs-wrap { padding: 22px 14px 42px; }
+            #extStorePage .xs-head { align-items: flex-start; }
+            #extStorePage .xs-title { font-size: 20px; }
+            #extStorePage .xs-search { min-width: 100%; }
+            #extStorePage .xs-grid { grid-template-columns: 1fr; gap: 10px; }
+            #extStorePage .xs-card { min-height: 138px; }
+        }
+
+        /* Default Scout look: midnight navy surfaces with restrained neon accents.
+           Browser skins keep their own palettes and pages inside the frame are untouched. */
+        html:not([data-skin]) {
+            --bg0: #070b14;
+            --bg1: #0b1220;
+            --bg2: #101a2b;
+            --bg3: #17243a;
+            --bg-elevated: #0c1424;
+            --surface: rgba(74, 126, 207, .12);
+            --surface2: rgba(63, 143, 243, .22);
+            --bd: rgba(104, 142, 203, .24);
+            --bd2: rgba(104, 166, 245, .48);
+            --tx: #eef5ff;
+            --tx2: #bdcce4;
+            --tx3: #8093b2;
+            --ac: #43c7ff;
+            --ac2: #82deff;
+            --ok: #47dfc1;
+        }
+
+        html:not([data-skin]) body {
+            background:
+                radial-gradient(ellipse at 50% -36%, rgba(36, 91, 176, .2), transparent 55%),
+                var(--bg0);
+        }
+
+        html:not([data-skin]) .titlebar,
+        html:not([data-skin]) .navbar,
+        html:not([data-skin]) .bookmarks-bar {
+            background: linear-gradient(105deg, #080e1b, #0c1526 55%, #09101e);
+            border-color: rgba(82, 126, 194, .24);
+        }
+
+        html:not([data-skin]) .titlebar {
+            box-shadow: inset 0 1px 0 rgba(94, 164, 255, .08);
+        }
+
+        html:not([data-skin]) .tab {
+            background: rgba(17, 28, 47, .9);
+            border-color: rgba(86, 123, 181, .28);
+        }
+
+        html:not([data-skin]) .tab.active {
+            background: linear-gradient(110deg, rgba(20, 75, 143, .52), rgba(16, 34, 62, .96));
+            border-color: rgba(66, 176, 255, .72);
+            box-shadow: inset 0 0 16px rgba(36, 133, 239, .13), 0 0 12px rgba(32, 125, 237, .14);
+        }
+
+        html:not([data-skin]) .tab-icon,
+        html:not([data-skin]) .nav-btn:not(:disabled) i,
+        html:not([data-skin]) .tool-btn:not(:disabled) i,
+        html:not([data-skin]) .bookmarks-toggle i {
+            color: #58c9ff;
+        }
+
+        html:not([data-skin]) #historyBtn i,
+        html:not([data-skin]) #settingsBtn i,
+        html:not([data-skin]) #metricsBtn i {
+            color: #a68aff;
+        }
+
+        html:not([data-skin]) #aiBtn i {
+            color: #e183ff;
+        }
+
+        html:not([data-skin]) #blockToggle.on i {
+            color: #45ddc0;
+        }
+
+        html:not([data-skin]) .omnibox {
+            background: rgba(7, 14, 27, .88);
+            border: 1px solid rgba(86, 132, 201, .2);
+            box-shadow: inset 0 1px 8px rgba(0, 0, 0, .22);
+        }
+
+        html:not([data-skin]) .omnibox:focus-within {
+            border-color: rgba(67, 199, 255, .7);
+            box-shadow: 0 0 0 3px rgba(67, 199, 255, .09), inset 0 1px 8px rgba(0, 0, 0, .22);
+        }
+
+        html:not([data-skin]) .omni-btn.go,
+        html:not([data-skin]) .nt-search button {
+            background: linear-gradient(135deg, #31aaff, #54d9ff);
+            color: #06101e;
+            box-shadow: 0 0 16px rgba(44, 165, 255, .2);
+        }
+
+        html:not([data-skin]) .omni-btn.go:hover,
+        html:not([data-skin]) .nt-search button:hover {
+            background: linear-gradient(135deg, #5bc0ff, #8ce8ff);
+        }
+
+        html:not([data-skin]) .tool-toggle.on {
+            border-color: rgba(57, 218, 188, .42);
+            background: rgba(27, 176, 153, .12);
+            color: #60e4cb;
+        }
+
+        html:not([data-skin]) .nt-bg {
+            opacity: 1;
+            filter: saturate(1.12);
+        }
+
+        html:not([data-skin]) #newtab {
+            background: #070b17;
+        }
+
+        html:not([data-skin]) #newtab .nt-overlay {
+            background:
+                radial-gradient(ellipse at 18% 14%, rgba(26, 109, 223, .22), transparent 46%),
+                radial-gradient(ellipse at 82% 74%, rgba(111, 52, 203, .16), transparent 44%),
+                linear-gradient(180deg, rgba(5, 9, 20, .24), rgba(5, 9, 19, .72));
+            backdrop-filter: blur(1px);
+        }
+
+        html:not([data-skin]) #settingsPage .nt-bg {
+            background:
+                radial-gradient(ellipse at 12% 10%, rgba(26, 93, 184, .24), transparent 48%),
+                linear-gradient(135deg, #070b16, #0c1425 55%, #080c18) !important;
+        }
+
+        html:not([data-skin]) #settingsPage .nt-overlay {
+            background:
+                radial-gradient(ellipse at 82% 24%, rgba(74, 51, 151, .12), transparent 45%),
+                linear-gradient(180deg, rgba(5, 9, 20, .28), rgba(5, 9, 19, .7)) !important;
+        }
+
+        html:not([data-skin]) .nt-brand {
+            color: #83ddff;
+            text-shadow: 0 0 28px rgba(58, 175, 255, .28);
+        }
+
+        html:not([data-skin]) .nt-brand > i {
+            color: #57c8ff;
+            filter: drop-shadow(0 0 12px rgba(49, 166, 255, .54));
+        }
+
+        html:not([data-skin]) .nt-time i {
+            filter: drop-shadow(0 0 6px rgba(67, 199, 255, .5));
+        }
+
+        html:not([data-skin]) .nt-search-engine,
+        html:not([data-skin]) .nt-search input {
+            background: rgba(7, 14, 28, .78);
+            border-color: rgba(107, 153, 222, .28);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .18);
+        }
+
+        html:not([data-skin]) .nt-search-engine:hover,
+        html:not([data-skin]) .nt-search-engine.open,
+        html:not([data-skin]) .nt-search input:focus {
+            border-color: rgba(67, 199, 255, .65);
+            box-shadow: 0 0 18px rgba(47, 143, 255, .13);
+        }
+
+        html:not([data-skin]) .nt-chip,
+        html:not([data-skin]) .nt-fav-box,
+        html:not([data-skin]) .nt-fav-add {
+            background: rgba(9, 17, 32, .7);
+            border-color: rgba(98, 142, 205, .3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .2);
+        }
+
+        html:not([data-skin]) .nt-chip:hover,
+        html:not([data-skin]) .nt-fav-box:hover,
+        html:not([data-skin]) .nt-fav-add:hover:not(.disabled) {
+            background: rgba(25, 63, 113, .7);
+            border-color: rgba(67, 199, 255, .62);
+            box-shadow: 0 0 18px rgba(42, 140, 240, .17);
+        }
+
+        html:not([data-skin]) .nt-wallpaper-btn {
+            background: rgba(14, 44, 82, .72);
+            border-color: rgba(67, 199, 255, .42);
+            box-shadow: 0 0 18px rgba(36, 132, 233, .16);
+        }
+
+        html:not([data-skin]) .nt-wallpaper-btn:hover {
+            background: rgba(21, 75, 133, .86);
+            border-color: rgba(96, 210, 255, .75);
+            box-shadow: 0 0 22px rgba(36, 156, 255, .27);
+        }
+
+        html:not([data-skin]) :is(.context-menu, .site-info-box, .bookmark-modal-content, .find-bar) {
+            border-color: rgba(91, 137, 204, .32);
+            box-shadow: 0 14px 48px rgba(0, 0, 0, .52), 0 0 24px rgba(29, 92, 175, .08);
+        }
+
+        html:not([data-skin]) :is(button, a, input, select):focus-visible {
+            outline-color: #56c9ff;
+        }
+
+        html:not([data-skin]) #frame {
+            background: #070b14;
+        }
 
     </style>
 </head>
@@ -5905,7 +7376,7 @@
                 </div>
                 <div class="gust-noscript-title">Woah there!</div>
                 <div class="gust-noscript-body">
-                    GUST needs JavaScript to run. It looks like JavaScript is currently
+                    Scout needs JavaScript to run. It looks like JavaScript is currently
                     disabled, possibly because this file is being opened as a
                     <code style="background:#252b33;padding:1px 5px;border-radius:4px;font-size:12px;">file://</code>
                     or
@@ -6009,15 +7480,12 @@
             <button class="tool-btn" id="settingsBtn" title="Settings">
                 <i class="fas fa-gear"></i>
             </button>
-            <button class="tool-btn" id="devToggle" title="Toggle logs (Ctrl+Shift+I)">
-                <i class="fas fa-server"></i>
-            </button>
-            <button class="tool-btn" id="codeBtn" title="Toggle elements inspector">
-                <i class="fas fa-code"></i>
+            <button class="tool-btn" id="devToggle" title="Developer logs (Ctrl+Shift+I)" aria-label="Toggle developer logs" aria-controls="logs" aria-pressed="false">
+                <i class="fas fa-terminal"></i>
             </button>
             <!-- Removed duplicate findBtn from toolbar -->
 
-            <button class="tool-btn" id="aiBtn" title="Toggle GUST Assistant (Alt+A)">
+            <button class="tool-btn" id="aiBtn" title="Toggle Scout Assistant (Alt+A)">
                 <i class="fas fa-wand-magic-sparkles"></i>
             </button>
 
@@ -6067,31 +7535,20 @@
                     <div class="nt-bg" id="ntBg"></div>
                     <div class="nt-overlay"></div>
                     
-                    <button class="nt-wallpaper-btn" id="ntGithubBtn" title="View on GitHub"
-                        style="left:76px;right:auto;">
-                        <i class="fab fa-github"></i>
-                    </button>
                     <button class="nt-wallpaper-btn" id="ntWallpaperBtn" title="Change background"
                         style="left:20px;right:auto;">
                         <i class="fas fa-image"></i>
                     </button>
 
                     
-                    <div id="gustCredit"
-                        style="position:absolute; bottom:20px; right:24px; z-index:10; color:rgba(255,255,255,1); font-size:18px; font-weight:600; font-family:var(--ui); display:flex; align-items:center; gap:5px; pointer-events:none; user-select:none; text-shadow:0 1px 4px rgba(0,0,0,0.6); letter-spacing:0.02em;">
-                        Made with <i class="fas fa-heart" style="color:#ff6b8a; font-size:15px;"></i> by Nautilus Labs
-                    </div>
-
                     <div class="nt-content">
                         <div class="nt-header">
                             <div class="nt-date" id="ntDate">-</div>
                             <div class="nt-time" id="ntTime" style="display:flex;align-items:center;gap:12px;">--:-- <i id="ntTimeIcon" class="fas fa-moon" style="font-size:0.85em;color:var(--ac);"></i></div>
                         </div>
-                        <div class="nt-brand" style="position:relative;">
-                            <i class="fas fa-wind gust-icon-anim" style="margin-right: -4px;"></i>
-                            <span style="letter-spacing: 3px; display:inline-flex;">
-                                <span class="gust-letter-G">G</span><span class="gust-letter-U">U</span><span class="gust-letter-S">S</span><span class="gust-letter-T">T</span>
-                            </span>
+                        <div class="nt-brand" style="position:relative;" aria-label="Scout">
+                            <i class="fas fa-earth-americas gust-icon-anim" style="margin-right: -4px;"></i>
+                            <span style="display:inline-flex;">Scout</span>
                             <span class="gust-badge-anim" style="
                                 font-size: 11px;
                                 font-weight: 700;
@@ -6118,7 +7575,6 @@
                                     <button data-engine="brave">Brave</button>
                                     <button data-engine="ddg">DuckDuckGo</button>
                                     <button data-engine="bing">Bing</button>
-                                    <button data-engine="custom">Custom</button>
                                 </div>
                             </div>
                             <input id="ntSearch" placeholder="Search or enter address" autocomplete="off">
@@ -6159,7 +7615,7 @@
                     <div class="adblock-header">
                         <div class="adblock-title">
                             <i class="fas fa-shield-halved" style="color: var(--ac);"></i>
-                            <span>Gust Adblock</span>
+                            <span>Scout Adblock</span>
                         </div>
                         <button id="adblockCloseBtn"
                             style="background:none; border:none; color:var(--tx2); cursor:pointer;">
@@ -6374,17 +7830,23 @@
 
                 
                 <div class="bookmark-modal" id="metricsModal" style="display:none;">
-                    <div class="bookmark-modal-content"
-                        style="width:780px;max-width:94vw;border:1px solid var(--bd);box-shadow:0 8px 24px rgba(0,0,0,0.45);">
-                        <h3><i class="fas fa-chart-simple"
-                                style="margin-right:8px;font-size:14px;color:var(--ac);opacity:0.8;"></i>Browser Metrics
-                        </h3>
-                        <div id="metricsBody" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+                    <div class="bookmark-modal-content metrics-shell">
+                        <div class="metrics-header">
+                            <div class="metrics-header-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="metrics-title-wrap">
+                                <div class="metrics-eyebrow">Scout System Monitor</div>
+                                <h3>Browser Metrics</h3>
+                                <p>Runtime, network, storage, and page performance at a glance.</p>
+                            </div>
+                            <div class="metrics-live">System snapshot</div>
                         </div>
-                        <div class="bookmark-modal-buttons" style="padding-top:4px;">
+                        <div id="metricsBody"></div>
+                        <div class="metrics-footer">
+                            <span class="metrics-updated" id="metricsUpdated">Preparing snapshot…</span>
                             <button class="bookmark-modal-btn secondary" id="metricsRefresh"><i
                                     class="fas fa-rotate-right" style="margin-right:6px;"></i>Refresh</button>
-                            <button class="bookmark-modal-btn primary" id="metricsClose">Close</button>
+                            <button class="bookmark-modal-btn primary" id="metricsClose"><i
+                                    class="fas fa-check" style="margin-right:6px;"></i>Done</button>
                         </div>
                     </div>
                 </div>
@@ -6400,14 +7862,20 @@
                     <div style="position:relative; height:100%; display:flex; flex-direction:row;">
 
                         
-                        <div
-                            style="width:200px; min-width:200px; height:100%; background:rgba(13,15,18,0.7); border-right:1px solid var(--bd); display:flex; flex-direction:column; padding:24px 0; backdrop-filter:blur(8px); overflow:hidden; min-height:0;">
+                        <div class="settings-sidebar"
+                            style="width:200px; min-width:200px; height:100%; background:rgba(7,12,24,0.92); border-right:1px solid rgba(73,119,201,0.24); display:flex; flex-direction:column; padding:24px 0; backdrop-filter:blur(8px); overflow:hidden; min-height:0;">
 
 
-                            <nav style="display:flex; flex-direction:column; gap:2px; padding:0 12px; height:100%; min-height:0;">
+                            <div class="settings-search-wrap">
+                                <i class="fas fa-magnifying-glass"></i>
+                                <input id="settingsSearch" type="search" placeholder="Search settings…" aria-label="Search settings">
+                                <div class="settings-search-status" id="settingsSearchStatus" aria-live="polite"></div>
+                            </div>
+                            <nav style="display:flex; flex-direction:column; gap:2px; padding:0 12px; flex:1; min-height:0;">
                                 <div style="display:flex; flex-direction:column; gap:2px; flex:1 1 auto; min-height:0; overflow-y:auto; scrollbar-width:thin;">
+                                <div class="settings-nav-heading">Main</div>
                                 <button class="settings-nav-item active" data-section="skins"><i
-                                        class="fas fa-mask"></i><span>Skins</span></button>
+                                        class="fas fa-gamepad"></i><span>Skins</span></button>
                                 <button class="settings-nav-item" data-section="connection"><i
                                         class="fas fa-network-wired"></i><span>Connection</span></button>
                                 <button class="settings-nav-item" data-section="aiassistant"><i
@@ -6419,7 +7887,7 @@
                                 <button class="settings-nav-item" data-section="cache"><i
                                         class="fas fa-database"></i><span>Cache</span></button>
                                 <button class="settings-nav-item" data-section="filesandmedia"><i
-                                        class="fas fa-photo-film"></i><span>Files &amp; Media</span></button>
+                                        class="fas fa-images"></i><span>Files &amp; Media</span></button>
                                 <button class="settings-nav-item" data-section="appearance"><i
                                         class="fas fa-palette"></i><span>Appearance</span></button>
                                 <button class="settings-nav-item" data-section="homescreen"><i
@@ -6427,20 +7895,22 @@
                                 <button class="settings-nav-item" data-section="shortcuts"><i
                                         class="fas fa-keyboard"></i><span>Shortcuts</span></button>
                                 <button class="settings-nav-item" data-section="language"><i
-                                        class="fas fa-language"></i><span>Language</span></button>
+                                        class="fas fa-globe"></i><span>Language</span></button>
                                 <button class="settings-nav-item" data-section="fallback"><i
                                         class="fas fa-rotate-left"></i><span>Fallback</span></button>
                                 </div>
-                                <hr style="margin-top:auto; border:none; border-top:1px solid var(--bd); margin-bottom:4px; margin-left:4px; margin-right:4px; flex-shrink:0;">
+                                <hr style="margin-top:auto; border:none; border-top:1px solid rgba(73,119,201,0.24); margin-bottom:4px; margin-left:12px; margin-right:12px; flex-shrink:0;">
+                                <div class="settings-nav-heading">Extras</div>
                                 <button class="settings-nav-item" data-section="tutorial"><i
-                                        class="fas fa-map"></i><span>Tutorial</span></button>
+                                        class="fas fa-book-open"></i><span>Tutorial</span></button>
                                 <button class="settings-nav-item" data-section="about"><i
-                                        class="fas fa-info-circle"></i><span>About</span></button>
+                                        class="fas fa-circle-info"></i><span>About</span></button>
                             </nav>
                         </div>
 
                         
                         <div
+                            class="settings-content"
                             style="flex:1; overflow-y:auto; padding:40px 48px; display:flex; flex-direction:column; gap:32px;">
 
 
@@ -6565,20 +8035,6 @@
                             
                             <div class="settings-section" data-section="aiassistant" style="display:none;">
                                 <div class="settings-card">
-                                    <div class="settings-card-head"><i class="fas fa-microchip"></i> Provider</div>
-                                    <div class="settings-card-body">
-                                        <div class="settings-toggle-row">
-                                            <button class="settings-engine-btn active">
-                                                <div class="engine-radio"><div class="engine-radio-dot"></div></div>
-                                                <div>
-                                                    <div class="engine-name">pollinations.ai</div>
-                                                    <div class="engine-url" style="margin-top:2px;">https://pollinations.ai</div>
-                                                </div>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="settings-card">
                                     <div class="settings-card-head"><i class="fas fa-wand-magic-sparkles"></i> Context</div>
                                     <div class="settings-card-body">
                                         <div class="settings-switch-row">
@@ -6601,27 +8057,8 @@
                                         <div class="settings-toggle-row" id="settingsEngineRows"></div>
                                     </div>
                                 </div>
-                                <div class="settings-card" id="customSearchCard" data-depends-on="custom">
-                                    <div class="settings-card-head"><i class="fas fa-pen"></i> Custom Search Engine</div>
-                                    <div class="settings-card-body">
-                                        <label class="settings-label">Engine Name</label>
-                                        <div style="display:flex; gap:8px;">
-                                            <input type="text" class="settings-input" id="customSearchNameInput" value="Custom" placeholder="My Engine">
-                                            <button class="settings-btn-icon" id="customSearchNameSaveBtn" title="Save"><i class="fas fa-check"></i></button>
-                                            <button class="settings-btn-icon" id="customSearchNameResetBtn" title="Reset to default"><i class="fas fa-rotate-left"></i></button>
-                                        </div>
-                                        <div class="settings-hint" style="margin-top:14px;">Display name for the custom engine in the picker.</div>
-                                        <label class="settings-label" style="margin-top:14px;">Search URL</label>
-                                        <div style="display:flex; gap:8px;">
-                                            <input type="text" class="settings-input" id="customSearchUrlInput" value="" placeholder="https://example.com/search?q={q}">
-                                            <button class="settings-btn-icon" id="customSearchSaveBtn" title="Save"><i class="fas fa-check"></i></button>
-                                            <button class="settings-btn-icon" id="customSearchResetBtn" title="Reset to default"><i class="fas fa-rotate-left"></i></button>
-                                        </div>
-                                        <div class="settings-hint">Use <code>{q}</code> as the query placeholder. Only used when <strong>Custom</strong> engine is selected.</div>
-                                    </div>
-                                </div>
                                 <div class="settings-card">
-                                    <div class="settings-card-head"><i class="fas fa-spell-check"></i> Spellcheck <span style="font-size:10px;font-weight:700;color:#ff4444;margin-left:4px;">[broken]</span></div>
+                                    <div class="settings-card-head"><i class="fas fa-spell-check"></i> Spellcheck</div>
                                     <div class="settings-card-body">
                                         <div class="settings-switch-row">
                                             <div>
@@ -6843,7 +8280,7 @@
                                         <div class="settings-switch-row">
                                             <div>
                                                 <div class="settings-switch-label">Start in fullscreen</div>
-                                                <div class="settings-hint">Automatically enter fullscreen on your first click or keypress after opening Gust.</div>
+                                                <div class="settings-hint">Automatically enter fullscreen on your first click or keypress after opening Scout.</div>
                                             </div>
                                             <div class="settings-switch" id="settingsAutoFullscreenSwitch">
                                                 <div class="settings-switch-track">
@@ -6860,7 +8297,7 @@
                                 <div class="settings-card">
                                     <div class="settings-card-head"><i class="fas fa-mask"></i> Browser Skin</div>
                                     <div class="settings-card-body">
-                                        <div class="settings-hint" style="margin-bottom:14px;">Disguise GUST as another
+                                        <div class="settings-hint" style="margin-bottom:14px;">Disguise Scout as another
                                             browser. Tabs, toolbar, menus and browser-specific extras are all
                                             re-dressed to match the real thing.</div>
                                         <div class="skin-tile-grid" id="skinTileGrid">
@@ -6870,7 +8307,7 @@
                                                     <div class="sp-bar"><span class="sp-dot"></span><span class="sp-dot"></span><span class="sp-omni"></span><span class="sp-dot"></span></div>
                                                     <div class="sp-body"></div>
                                                 </div>
-                                                <div class="skin-tile-name"><i class="fas fa-wind" style="color:#9de5ff;"></i><span>GUST</span><span class="skin-tile-check"><i class="fas fa-check"></i></span></div>
+                                                <div class="skin-tile-name"><i class="fas fa-earth-americas" style="color:#9de5ff;"></i><span>Scout</span><span class="skin-tile-check"><i class="fas fa-check"></i></span></div>
                                             </button>
                                             <button class="skin-tile" data-skinval="chrome">
                                                 <div class="skin-prev sk-chrome">
@@ -6918,10 +8355,10 @@
                                                     <div class="sp-bar"><span class="sp-dot"></span><span class="sp-dot"></span><span class="sp-omni"></span><span class="sp-dot"></span></div>
                                                     <div class="sp-body"></div>
                                                 </div>
-                                                <div class="skin-tile-name"><i class="fas fa-wand-magic-sparkles" style="color:#c9a2ff;"></i><span>GUST+</span><span class="skin-tile-check"><i class="fas fa-check"></i></span></div>
+                                                <div class="skin-tile-name"><i class="fas fa-wand-magic-sparkles" style="color:#c9a2ff;"></i><span>Scout+</span><span class="skin-tile-check"><i class="fas fa-check"></i></span></div>
                                             </button>
                                         </div>
-                                        <div class="settings-hint" style="margin-top:12px;">*A note on GUST+. By default, GUST+ is identical to regular GUST. However, GUST+ allows you to hand pick tab styles, sidebars, home screens, and more from whichever skin does it best, then paint the whole thing in custom colors. Tune it below.</div>
+                                        <div class="settings-hint" style="margin-top:12px;">*A note on Scout+. By default, Scout+ is identical to regular Scout. However, Scout+ allows you to hand pick tab styles, sidebars, home screens, and more from whichever skin does it best, then paint the whole thing in custom colors. Tune it below.</div>
                                     </div>
                                 </div>
 
@@ -6964,15 +8401,15 @@
                                 </div>
 
                                 <div class="settings-card" id="plusStudioCard">
-                                    <div class="settings-card-head"><i class="fas fa-wand-magic-sparkles"></i> GUST+ Studio</div>
+                                    <div class="settings-card-head"><i class="fas fa-wand-magic-sparkles"></i> Scout+ Studio</div>
                                     <div class="settings-card-body">
                                         <div class="settings-hint" style="margin-bottom:14px;">Build your own browser.
                                             Every row borrows that piece from a real mask — mix Chrome's tabs with
                                             Brave's toolbar and a Zen sidebar, or anything else. Touching any control
-                                            switches you to the GUST+ mask.</div>
+                                            switches you to the Scout+ mask.</div>
                                         <div class="plus-row"><span class="plus-row-label">Color theme</span>
                                             <div class="plus-seg" data-pluspart="theme">
-                                                <button data-val=""><i class="fas fa-wind" style="color:#9de5ff;"></i>GUST</button>
+                                                <button data-val=""><i class="fas fa-earth-americas" style="color:#9de5ff;"></i>Scout</button>
                                                 <button data-val="chrome"><i class="fab fa-chrome" style="color:#8ab4f8;"></i>Chrome</button>
                                                 <button data-val="brave"><i class="fab fa-brave" style="color:#fb542b;"></i>Brave</button>
                                                 <button data-val="firefox"><i class="fab fa-firefox-browser" style="color:#ff7139;"></i>Firefox</button>
@@ -6981,7 +8418,7 @@
                                         </div>
                                         <div class="plus-row"><span class="plus-row-label">Tab strip</span>
                                             <div class="plus-seg" data-pluspart="tabs">
-                                                <button data-val=""><i class="fas fa-wind" style="color:#9de5ff;"></i>GUST</button>
+                                                <button data-val=""><i class="fas fa-earth-americas" style="color:#9de5ff;"></i>Scout</button>
                                                 <button data-val="chrome"><i class="fab fa-chrome" style="color:#8ab4f8;"></i>Chrome</button>
                                                 <button data-val="brave"><i class="fab fa-brave" style="color:#fb542b;"></i>Brave</button>
                                                 <button data-val="firefox"><i class="fab fa-firefox-browser" style="color:#ff7139;"></i>Firefox</button>
@@ -6990,7 +8427,7 @@
                                         </div>
                                         <div class="plus-row"><span class="plus-row-label">Toolbar</span>
                                             <div class="plus-seg" data-pluspart="nav">
-                                                <button data-val=""><i class="fas fa-wind" style="color:#9de5ff;"></i>GUST</button>
+                                                <button data-val=""><i class="fas fa-earth-americas" style="color:#9de5ff;"></i>Scout</button>
                                                 <button data-val="chrome"><i class="fab fa-chrome" style="color:#8ab4f8;"></i>Chrome</button>
                                                 <button data-val="brave"><i class="fab fa-brave" style="color:#fb542b;"></i>Brave</button>
                                                 <button data-val="firefox"><i class="fab fa-firefox-browser" style="color:#ff7139;"></i>Firefox</button>
@@ -6999,7 +8436,7 @@
                                         </div>
                                         <div class="plus-row"><span class="plus-row-label">Address bar</span>
                                             <div class="plus-seg" data-pluspart="omni">
-                                                <button data-val=""><i class="fas fa-wind" style="color:#9de5ff;"></i>GUST</button>
+                                                <button data-val=""><i class="fas fa-earth-americas" style="color:#9de5ff;"></i>Scout</button>
                                                 <button data-val="chrome"><i class="fab fa-chrome" style="color:#8ab4f8;"></i>Chrome</button>
                                                 <button data-val="brave"><i class="fab fa-brave" style="color:#fb542b;"></i>Brave</button>
                                                 <button data-val="firefox"><i class="fab fa-firefox-browser" style="color:#ff7139;"></i>Firefox</button>
@@ -7008,7 +8445,7 @@
                                         </div>
                                         <div class="plus-row"><span class="plus-row-label">Browser menu</span>
                                             <div class="plus-seg" data-pluspart="menu">
-                                                <button data-val=""><i class="fas fa-wind" style="color:#9de5ff;"></i>GUST</button>
+                                                <button data-val=""><i class="fas fa-earth-americas" style="color:#9de5ff;"></i>Scout</button>
                                                 <button data-val="chrome"><i class="fab fa-chrome" style="color:#8ab4f8;"></i>Chrome</button>
                                                 <button data-val="brave"><i class="fab fa-brave" style="color:#fb542b;"></i>Brave</button>
                                                 <button data-val="firefox"><i class="fab fa-firefox-browser" style="color:#ff7139;"></i>Firefox</button>
@@ -7017,7 +8454,7 @@
                                         </div>
                                         <div class="plus-row"><span class="plus-row-label">Home screen</span>
                                             <div class="plus-seg" data-pluspart="home">
-                                                <button data-val=""><i class="fas fa-wind" style="color:#9de5ff;"></i>GUST</button>
+                                                <button data-val=""><i class="fas fa-earth-americas" style="color:#9de5ff;"></i>Scout</button>
                                                 <button data-val="chrome"><i class="fab fa-chrome" style="color:#8ab4f8;"></i>Chrome</button>
                                                 <button data-val="brave"><i class="fab fa-brave" style="color:#fb542b;"></i>Brave</button>
                                                 <button data-val="firefox"><i class="fab fa-firefox-browser" style="color:#ff7139;"></i>Firefox</button>
@@ -7042,17 +8479,17 @@
                                 </div>
 
                                 <div class="settings-card" id="plusModsCard">
-                                    <div class="settings-card-head"><i class="fas fa-toggle-on"></i> GUST+ Toolbar &amp; Modules</div>
+                                    <div class="settings-card-head"><i class="fas fa-toggle-on"></i> Scout+ Toolbar &amp; Modules</div>
                                     <div class="settings-card-body">
                                         <div class="settings-hint" style="margin-bottom:10px;">Every button and extra is
                                             its own switch — strip the toolbar to nothing or turn everything on at once.
-                                            Applies while the GUST+ mask is active.</div>
+                                            Applies while the Scout+ mask is active.</div>
                                         <div class="plus-mod-grid" id="plusModGrid"></div>
                                     </div>
                                 </div>
 
                                 <div class="settings-card" id="plusColorCard">
-                                    <div class="settings-card-head"><i class="fas fa-palette"></i> GUST+ Color Lab</div>
+                                    <div class="settings-card-head"><i class="fas fa-palette"></i> Scout+ Color Lab</div>
                                     <div class="settings-card-body">
                                         <div class="settings-hint" style="margin-bottom:12px;">Repaint anything. Core
                                             palette drives the whole UI; below it, every color the borrowed parts
@@ -7070,7 +8507,7 @@
                                 </div>
 
                                 <div class="settings-card" id="plusShapeCard">
-                                    <div class="settings-card-head"><i class="fas fa-shapes"></i> GUST+ Shape &amp; Type</div>
+                                    <div class="settings-card-head"><i class="fas fa-shapes"></i> Scout+ Shape &amp; Type</div>
                                     <div class="settings-card-body">
                                         <div class="plus-slider-row"><span class="plus-row-label">Corner radius</span>
                                             <input type="range" class="settings-slider" id="plusRadius" min="0" max="24" step="1" value="8">
@@ -7216,20 +8653,6 @@
                                                 <div style="display:flex; gap:8px; align-items:center;">
                                                     <code
                                                         style="background:var(--bg3); padding:4px 10px; border-radius:4px; color:var(--tx); font-size:11px; border:1px solid var(--bd);">Alt + G</code>
-                                                    <button class="settings-btn-icon" style="width:28px; height:28px;"
-                                                        title="Edit shortcut"><i class="fas fa-pen"
-                                                            style="font-size:11px;"></i></button>
-                                                    <button class="settings-btn-icon" style="width:28px; height:28px;"
-                                                        title="Reset shortcut"><i class="fas fa-rotate-left"
-                                                            style="font-size:11px;"></i></button>
-                                                </div>
-                                            </div>
-                                            <div
-                                                style="display:flex; justify-content:space-between; align-items:center;">
-                                                <span style="color:var(--tx2);">Element Inspector</span>
-                                                <div style="display:flex; gap:8px; align-items:center;">
-                                                    <code class="shortcut-display" data-shortcut="inspector"
-                                                        style="background:var(--bg3); padding:4px 10px; border-radius:4px; color:var(--tx); font-size:11px; border:1px solid var(--bd);">Alt + I</code>
                                                     <button class="settings-btn-icon" style="width:28px; height:28px;"
                                                         title="Edit shortcut"><i class="fas fa-pen"
                                                             style="font-size:11px;"></i></button>
@@ -7421,13 +8844,13 @@
                                 <div class="settings-card">
                                     <div class="settings-card-head"><i class="fas fa-map"></i> Interactive Tour</div>
                                     <div class="settings-card-body">
-                                        <div class="settings-hint" style="margin-bottom:14px;">Walk through 18 steps
+                                        <div class="settings-hint" style="margin-bottom:14px;">Walk through 17 steps
                                             covering navigation, search, bookmarks, ad blocking, metrics, browser logs,
-                                            page inspector, tabs, and the new tab page. Takes under a minute.</div>
+                                            tabs, and the new tab page. Takes under a minute.</div>
                                         <div style="display:flex;gap:20px;margin-bottom:18px;">
                                             <span
                                                 style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--tx2);"><i
-                                                    class="fas fa-list-check" style="color:var(--ac);"></i> 18
+                                                    class="fas fa-list-check" style="color:var(--ac);"></i> 17
                                                 steps</span>
                                             <span
                                                 style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--tx2);"><i
@@ -7444,11 +8867,14 @@
                             </div>
                             <div class="settings-section" data-section="about" style="display:none;">
                                 <div class="settings-card">
-                                    <div class="settings-card-head"><i class="fas fa-info-circle"></i> About Gust
+                                    <div class="settings-card-head"><i class="fas fa-earth-americas"></i> About Scout
                                     </div>
                                     <div class="settings-card-body">
+                                        <div style="font-size:13px; line-height:1.7; color:var(--tx2);">
+                                            Scout is a browser-in-a-browser that lets you browse websites through a WebSocket proxy. It brings search, tabs, bookmarks, ad and tracker blocking, cached pages, and built-in page inspection together in one place.
+                                        </div>
                                         <div
-                                            style="display:flex; flex-direction:column; gap:16px; font-size:13px; line-height:1.7; color:var(--tx2);">
+                                            style="display:none; flex-direction:column; gap:16px; font-size:13px; line-height:1.7; color:var(--tx2);">
                                           <div>
                                                 <div
                                                     style="color:var(--tx); font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
@@ -7458,12 +8884,12 @@
                                                 <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--tx2);">
                                                     <div style="padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--bd);">
                                                         <div style="margin-bottom:6px;">
-                                                            <span style="color:var(--tx);font-weight:600;">Nautilus Labs</span>
+                                                            <span style="color:var(--tx);font-weight:600;">Project team</span>
                                                             <span style="color:var(--tx3)"> — </span>
-                                                            The team behind GUST
+                                                            The team behind Scout
                                                         </div>
                                                         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding-left:2px;">
-                                                            <a href="https://github.com/nautilus-os" target="_blank" rel="noopener" style="color:var(--ac);font-size:12px;text-decoration:none;background:rgba(157,229,255,0.08);border:1px solid rgba(157,229,255,0.2);border-radius:5px;padding:2px 8px;display:inline-flex;align-items:center;gap:5px;">Nautilus Labs <i class="fas fa-arrow-up-right-from-square" style="font-size:10px;opacity:0.7;"></i></a><span style="color:var(--tx2);font-size:12px;margin-left:-2px;">:</span>
+                                                            <a href="https://github.com/nautilus-os" target="_blank" rel="noopener" style="color:var(--ac);font-size:12px;text-decoration:none;background:rgba(157,229,255,0.08);border:1px solid rgba(157,229,255,0.2);border-radius:5px;padding:2px 8px;display:inline-flex;align-items:center;gap:5px;">Project repository <i class="fas fa-arrow-up-right-from-square" style="font-size:10px;opacity:0.7;"></i></a><span style="color:var(--tx2);font-size:12px;margin-left:-2px;">:</span>
                                                             <a href="https://github.com/dinguschan-owo" target="_blank" rel="noopener" style="color:var(--ac);font-size:12px;text-decoration:none;background:rgba(157,229,255,0.08);border:1px solid rgba(157,229,255,0.2);border-radius:5px;padding:2px 8px;display:inline-flex;align-items:center;gap:5px;">dinguschan <i class="fas fa-arrow-up-right-from-square" style="font-size:10px;opacity:0.7;"></i></a><span style="color:var(--tx2);font-size:12px;margin-left:-2px;">,</span>
                                                             <a href="https://github.com/x8rr" target="_blank" rel="noopener" style="color:var(--ac);font-size:12px;text-decoration:none;background:rgba(157,229,255,0.08);border:1px solid rgba(157,229,255,0.2);border-radius:5px;padding:2px 8px;display:inline-flex;align-items:center;gap:5px;">xor <i class="fas fa-arrow-up-right-from-square" style="font-size:10px;opacity:0.7;"></i></a><span style="color:var(--tx2);font-size:12px;margin-left:-2px;">,</span>
                                                             <a href="https://github.com/CompactAIOfficial" target="_blank" rel="noopener" style="color:var(--ac);font-size:12px;text-decoration:none;background:rgba(157,229,255,0.08);border:1px solid rgba(157,229,255,0.2);border-radius:5px;padding:2px 8px;display:inline-flex;align-items:center;gap:5px;">lanefiedler <i class="fas fa-arrow-up-right-from-square" style="font-size:10px;opacity:0.7;"></i></a><span style="color:var(--tx2);font-size:12px;margin-left:-2px;">, and</span>
@@ -7574,7 +9000,7 @@
                                         <div class="settings-switch-row" style="align-items:center;">
                                             <div>
                                                 <div class="settings-switch-label">Max retry attempts (main)</div>
-                                                <div class="settings-hint">How many times Gust retries on the primary WISP server before switching to the fallback.</div>
+                                                <div class="settings-hint">How many times Scout retries on the primary WISP server before switching to the fallback.</div>
                                             </div>
                                             <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
                                                 <button class="settings-btn-icon" id="mainRetryMinus" title="Decrease"><i class="fas fa-minus"></i></button>
@@ -7585,7 +9011,7 @@
                                         <div class="settings-switch-row" style="align-items:center; margin-top:12px;">
                                             <div>
                                                 <div class="settings-switch-label">Max retry attempts (fallback)</div>
-                                                <div class="settings-hint">How many times Gust will attempt the fallback WISP before giving up and showing an error.</div>
+                                                <div class="settings-hint">How many times Scout will attempt the fallback WISP before giving up and showing an error.</div>
                                             </div>
                                             <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
                                                 <button class="settings-btn-icon" id="fallbackRetryMinus" title="Decrease"><i class="fas fa-minus"></i></button>
@@ -7696,7 +9122,7 @@
                                         <div class="settings-switch-row">
                                             <div>
                                                 <div class="settings-switch-label">Auto-download unknown files</div>
-                                                <div class="settings-hint">When Gust receives a file it can't display (e.g. .zip, .exe), automatically trigger a browser download instead of showing an error page.</div>
+                                                <div class="settings-hint">When Scout receives a file it can't display (e.g. .zip, .exe), automatically trigger a browser download instead of showing an error page.</div>
                                             </div>
                                             <div class="settings-switch" id="mediaDownloadSwitch">
                                                 <div class="settings-switch-track"><div class="settings-switch-thumb"></div></div>
@@ -9255,10 +10681,10 @@ if(token){ $('#tok').value=token; start(); }
             <div class="ai-sidebar hidden" id="aiSidebar">
                 <div class="ai-panel-resize-handle" id="aiResizeHandle"></div>
                 <div class="ai-sidebar-head">
-                    <span class="ai-sidebar-title">GUST Assistant <span style="font-size:10px;font-weight:700;color:#ff4444;margin-left:4px;">[experimental]</span></span>
+                    <span class="ai-sidebar-title">Scout Assistant <span style="font-size:10px;font-weight:700;color:#ff4444;margin-left:4px;">[experimental]</span></span>
                     <div style="display:flex;align-items:center;gap:12px;margin-left:auto;font-size:13px;color:var(--tx2);user-select:none;">
                         <span>Page Context</span>
-                        <div class="settings-switch" id="aiContextToggle" title="Let GUST Assistant read the current page">
+                        <div class="settings-switch" id="aiContextToggle" title="Let Scout Assistant read the current page">
                             <div class="settings-switch-track"><div class="settings-switch-thumb"></div></div>
                         </div>
                     </div>
@@ -9269,13 +10695,13 @@ if(token){ $('#tok').value=token; start(); }
                             <div class="ai-welcome-icon">
                                 <i class="fas fa-wand-magic-sparkles" style="color:var(--ac);opacity:1;font-size:28px;"></i>
                             </div>
-                            <h3>GUST Assistant</h3>
+                            <h3>Scout Assistant</h3>
                             <p>Ask questions about the page you're browsing, get help with site content, or just chat.</p>
                         </div>
                     </div>
                     <div class="ai-input-area" style="position:relative;">
                         <div class="ai-permission-bar" id="aiPermissionBar">
-                            <span>Allow GUST Assistant to access this page?</span>
+                            <span>Allow Scout Assistant to access this page?</span>
                             <div class="perm-btns">
                             <button class="perm-check" id="permAllow" title="Allow"><i class="fas fa-check"></i></button>
                             <button class="perm-x" id="permDeny" title="Deny"><i class="fas fa-times"></i></button>
@@ -11284,7 +12710,6 @@ window._libcurlReady = true;
             const blockToggle = $("blockToggle");
             const blockState = $("blockState");
             const devToggle = $("devToggle");
-            const codeBtn = $("codeBtn");
             const findBtn = $("findBtn");
             const findOmniBtn = $("findOmniBtn");
             const findBar = $("findBar");
@@ -11343,7 +12768,12 @@ window._libcurlReady = true;
             let hist = [];
             let histIdx = -1;
             let navId = 0; 
-            let selectedEngine = (function () { try { return ls.getItem('gust:engine:v1') || 'ddg'; } catch { return 'ddg'; } })();
+            let selectedEngine = (function () {
+                try {
+                    const saved = ls.getItem('gust:engine:v1');
+                    return ['brave', 'ddg', 'bing'].includes(saved) ? saved : 'ddg';
+                } catch { return 'ddg'; }
+            })();
 
             let totalRequests = 0;
             let pendingRequests = 0;
@@ -11736,7 +13166,7 @@ window._libcurlReady = true;
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Error - Gust Browser</title>
+    <title>Error - Scout Browser</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
@@ -11987,8 +13417,8 @@ window._libcurlReady = true;
 <body>
     <div class="error-content">
         <div class="error-brand" onclick="window.parent.postMessage({t:'n', u:'gust://newtab'}, '*')">
-            <i class="fas fa-wind"></i>
-            <span>GUST</span>
+            <i class="fas fa-earth-americas"></i>
+            <span>Scout</span>
         </div>
         
         <div class="error-header">
@@ -12036,11 +13466,8 @@ window._libcurlReady = true;
                 brave: "https://search.brave.com/search?q=",
                 ddg: "https://duckduckgo.com/?q=",
                 google: "https://www.google.com/search?q=",
-                bing: "https://www.bing.com/search?q=",
-                custom: "https://example.com/search?q={q}"
+                bing: "https://www.bing.com/search?q="
             };
-            const CUSTOM_SEARCH_URL_KEY = "gust:custom-search-url:v1";
-            const CUSTOM_SEARCH_NAME_KEY = "gust:custom-search-name:v1";
             const WALLPAPER_QUERIES = ["aurora", "nebula", "ocean", "fog", "desert", "mountain", "city night", "forest", "abstract"];
             const WALLPAPER_STORAGE_KEY = "gust:newtab-wallpaper:v1";
             const FAV_KEY = "gust:favorites:v1";
@@ -13511,25 +14938,7 @@ window._libcurlReady = true;
 
             function getSearchBase() {
                 const key = selectedEngine || "ddg";
-                if (key === "custom") {
-                    const customUrl = (function () { try { return ls.getItem(CUSTOM_SEARCH_URL_KEY); } catch { return ""; } })();
-                    return (customUrl || SEARCH_ENGINES.custom).replace("{q}", "");
-                }
                 return SEARCH_ENGINES[key] || SEARCH_ENGINES.ddg;
-            }
-
-            function getCustomEngineName() {
-                try {
-                    const name = ls.getItem(CUSTOM_SEARCH_NAME_KEY);
-                    return (name && name.trim()) ? name.trim() : "Custom";
-                } catch { return "Custom"; }
-            }
-
-            function updateDependsOn() {
-                document.querySelectorAll('[data-depends-on]').forEach(el => {
-                    const dep = el.dataset.dependsOn;
-                    el.classList.toggle('depends-disabled', selectedEngine !== dep);
-                });
             }
 
             function updateClock() {
@@ -13563,14 +14972,14 @@ window._libcurlReady = true;
             }
 
             const WALLPAPER_GRADIENTS = [
-                "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)",
-                "linear-gradient(135deg, #1b1f24 0%, #222833 50%, #1b1f24 100%)",
-                "linear-gradient(135deg, #232526 0%, #414345 100%)",
-                "linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%)",
-                "linear-gradient(135deg, #2c3e50 0%, #3498db 100%)",
-                "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-                "linear-gradient(135deg, #434343 0%, #000000 100%)",
-                "linear-gradient(135deg, #485563 0%, #29323c 100%)"
+                "radial-gradient(ellipse at 18% 12%, rgba(33, 124, 255, .38), transparent 42%), linear-gradient(135deg, #070b17 0%, #101b38 52%, #090d1c 100%)",
+                "radial-gradient(ellipse at 80% 15%, rgba(111, 56, 218, .32), transparent 42%), linear-gradient(135deg, #080b19 0%, #171333 54%, #090d1d 100%)",
+                "radial-gradient(ellipse at 80% 80%, rgba(16, 170, 208, .25), transparent 45%), linear-gradient(135deg, #060d18 0%, #10233a 52%, #080c18 100%)",
+                "radial-gradient(ellipse at 12% 78%, rgba(35, 91, 222, .32), transparent 44%), linear-gradient(135deg, #090d1b 0%, #11172e 50%, #080a17 100%)",
+                "radial-gradient(ellipse at 65% 20%, rgba(21, 154, 234, .28), transparent 42%), linear-gradient(135deg, #07101d 0%, #102944 55%, #080b18 100%)",
+                "radial-gradient(ellipse at 48% 10%, rgba(110, 66, 224, .27), transparent 40%), linear-gradient(135deg, #070a18 0%, #171a3b 52%, #080d1c 100%)",
+                "radial-gradient(ellipse at 18% 15%, rgba(40, 113, 233, .3), transparent 42%), linear-gradient(135deg, #060912 0%, #10172b 50%, #070a14 100%)",
+                "radial-gradient(ellipse at 82% 72%, rgba(27, 147, 193, .25), transparent 44%), linear-gradient(135deg, #070d18 0%, #132033 52%, #090b18 100%)"
             ];
             let wallpaperGradientIdx = 0;
 
@@ -13631,7 +15040,7 @@ window._libcurlReady = true;
             function loadFavorites() {
                 try {
                     const raw = ls.getItem(FAV_KEY);
-                    favorites = raw ? JSON.parse(raw) : [{ url: DISCORD_INTERNAL, name: 'Discord' }];
+                    favorites = raw ? JSON.parse(raw) : [];
                 } catch { favorites = []; }}
 
             function saveFavorites() {
@@ -13954,11 +15363,12 @@ window._libcurlReady = true;
                 const wasHidden = logsEl.classList.contains("hidden");
                 if (wasHidden) {
                     // Close other panels
-                    if (elementsEl && !elementsEl.classList.contains('hidden')) { elementsEl.classList.add('hidden'); $('codeBtn')?.classList.remove('active'); const _ov = $('elemHighlightOverlay'); if (_ov) _ov.style.display = 'none'; }
+                    if (elementsEl && !elementsEl.classList.contains('hidden')) { elementsEl.classList.add('hidden'); const _ov = $('elemHighlightOverlay'); if (_ov) _ov.style.display = 'none'; }
                     const aiSb = document.getElementById('aiSidebar'); if (aiSb && !aiSb.classList.contains('hidden')) { aiSb.classList.add('hidden'); $('aiBtn')?.classList.remove('active'); }
                 }
                 logsEl.classList.toggle("hidden");
                 $('devToggle')?.classList.toggle('active', wasHidden);
+                $('devToggle')?.setAttribute('aria-pressed', String(wasHidden));
                 document.body.classList.toggle('panel-open', wasHidden);
                 if (window._updateFindBarPos) window._updateFindBarPos();
                 if (wasHidden && !panelWidthPersist) {
@@ -13971,7 +15381,7 @@ window._libcurlReady = true;
                 const wasHidden = elementsEl.classList.contains("hidden");
                 if (wasHidden) {
                     // Close other panels
-                    if (logsEl && !logsEl.classList.contains('hidden')) { logsEl.classList.add('hidden'); $('devToggle')?.classList.remove('active'); }
+                    if (logsEl && !logsEl.classList.contains('hidden')) { logsEl.classList.add('hidden'); $('devToggle')?.classList.remove('active'); $('devToggle')?.setAttribute('aria-pressed', 'false'); }
                     const aiSb = document.getElementById('aiSidebar'); if (aiSb && !aiSb.classList.contains('hidden')) { aiSb.classList.add('hidden'); $('aiBtn')?.classList.remove('active'); }
                 } else {
                     // Clear stale state when closing
@@ -13981,7 +15391,6 @@ window._libcurlReady = true;
                     const content = $('elemDetailContent'); if (content) content.innerHTML = '';
                 }
                 elementsEl.classList.toggle("hidden");
-                $('codeBtn')?.classList.toggle('active', wasHidden);
                 document.body.classList.toggle('panel-open', wasHidden);
                 if (window._updateFindBarPos) window._updateFindBarPos();
                 if (wasHidden && !panelWidthPersist) {
@@ -14013,7 +15422,7 @@ window._libcurlReady = true;
                 const _ov = $('elemHighlightOverlay'); if (_ov) _ov.style.display = 'none';
 
                 if (pageUrl === HOME_INTERNAL || isSettingsPage(pageUrl)) {
-                    elementsTree.innerHTML = '<li style="color: var(--tx3); padding: 8px;">Cannot inspect internal Gust pages</li>';
+                    elementsTree.innerHTML = '<li style="color: var(--tx3); padding: 8px;">Cannot inspect internal Scout pages</li>';
                     return;
                 }
 
@@ -15703,6 +17112,24 @@ const BLOCK_ENABLED = ${JSON.stringify(!!blockEnabled)};
 const WEBRTC_BLOCK = ${JSON.stringify(!!webrtcBlock)};
 const SPOOF_UA = ${JSON.stringify(pageUA || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.7778.96 Safari/537.36')};
 const SPELLCHECK = ${JSON.stringify(!!spellcheck)};
+let spellcheckEnabled = SPELLCHECK;
+const spellcheckSelector = 'input:not([type]), input[type="text"], input[type="search"], textarea, [contenteditable]:not([contenteditable="false"])';
+const applySpellcheck = root => {
+    if (root.nodeType === Node.ELEMENT_NODE && root.matches(spellcheckSelector)) root.spellcheck = spellcheckEnabled;
+    root.querySelectorAll?.(spellcheckSelector).forEach(el => el.spellcheck = spellcheckEnabled);
+};
+try {
+    applySpellcheck(document);
+    new MutationObserver(records => records.forEach(record => {
+        if (record.type === 'attributes') applySpellcheck(record.target);
+        else record.addedNodes.forEach(applySpellcheck);
+    })).observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['contenteditable', 'type']
+    });
+} catch(e) {}
 const INIT_COOKIES = ${JSON.stringify((() => { try { return getCookieHeader(baseUrl, { forDocument: true }); } catch (e) { return ''; } })())};
 const INIT_LS = ${JSON.stringify((() => { try { return getPageLS(new URL(baseUrl).origin); } catch (e) { return {}; } })())};
 
@@ -16042,7 +17469,10 @@ window.addEventListener('message', e => {
     try { document.querySelector(d.selector)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(e) {}
   }
   if (d.type === 'gust:spellcheck') {
-    try { document.querySelectorAll('input, textarea').forEach(el => el.spellcheck = !!d.enabled); } catch(e) {}
+        try {
+            spellcheckEnabled = !!d.enabled;
+            applySpellcheck(document);
+        } catch(e) {}
   }
   // ── Find-in-page engine (runs INSIDE the frame) ────────────────────────────
   // The parent can't reach this opaque-origin document (frame.contentWindow.document
@@ -17509,7 +18939,7 @@ try {
   });
 } catch(e) {}
 
-try { document.querySelectorAll('input, textarea').forEach(el => el.spellcheck = SPELLCHECK); } catch(e) {}
+try { applySpellcheck(document); } catch(e) {}
 
 // ── Cache API shim ──────────────────────────────────────────────────────────
 // window.caches in the blob:null frame rejects with SecurityError on open() —
@@ -20861,8 +22291,8 @@ _VIEWER_DL_JS +
 
                 if (!url || url === HOME_INTERNAL || isSettingsPage(url) || url.startsWith("gust://")) {
                     iconEl.className = "site-info-icon neutral";
-                    iconI.className = "fas fa-wind";
-                    title.textContent = "Gust Browser";
+                    iconI.className = "fas fa-earth-americas";
+                    title.textContent = "Scout Browser";
                     subtitle.textContent = "Internal page";
                     hostEl.textContent = "gust://";
                     protoEl.innerHTML = `<span class="ok">Internal</span>`;
@@ -21006,10 +22436,11 @@ _VIEWER_DL_JS +
                         try { const u = new URL(url); display = u.hostname + (u.pathname !== '/' ? u.pathname : ''); } catch { display = url; }
                         if (display.length > 30) display = display.slice(0, 27) + '…';
                         const row = document.createElement('button');
-                        row.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;background:transparent;border:none;border-radius:8px;cursor:pointer;color:var(--tx2);font-size:12px;text-align:left;transition:background .1s, transform .15s, opacity .15s;opacity:0;transform:translateY(6px);';
-                        row.innerHTML = `<i class="fas fa-globe" style="color:var(--tx3);width:14px;text-align:center;flex-shrink:0;transition:transform .2s cubic-bezier(.34,1.56,.64,1);"></i><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(display)}</span><span style="font-size:10px;color:var(--tx3);flex-shrink:0;white-space:nowrap;">${formatHistoryTime(ts)}</span>`;
-                        row.onmouseenter = () => { row.style.background = 'var(--surface2)'; };
-                        row.onmouseleave = () => { row.style.background = 'transparent'; };
+                        row.className = 'history-item';
+                        row.title = url;
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateY(6px)';
+                        row.innerHTML = `<i class="fas fa-globe history-item-icon"></i><span class="history-item-host">${escapeHtml(display)}</span><span class="history-item-time">${formatHistoryTime(ts)}</span>`;
                         row.onclick = () => { hideHistoryPopup(); go(url); };
                         list.appendChild(row);
                         // staggered fade-slide in
@@ -21057,6 +22488,7 @@ _VIEWER_DL_JS +
 
             const metricsModal = $('metricsModal');
             const metricsBody = $('metricsBody');
+            const metricsUpdated = $('metricsUpdated');
             const metricsStartTime = Date.now();
 
             function fmtBytes(b) {
@@ -21072,24 +22504,25 @@ _VIEWER_DL_JS +
                 if (m > 0) return `${m}m ${s % 60}s`;
                 return `${s}s`;
             }
-            function metricCard(icon, label, value, sub, colorVar) {
-                return `<div style="background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;">
-                        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:2px;">${label}</div>
-                        <div style="font-size:20px;font-weight:700;color:var(--tx);font-family:var(--mono);line-height:1;">${value}</div>
-                        ${sub ? `<div style="font-size:11px;color:var(--tx3);">${sub}</div>` : ''}
-                    </div>`;
+            function metricCard(icon, label, value, sub, tone) {
+                return `<article class="metric-card ${tone}">
+                        <span class="metric-card-icon"><i class="fas fa-${icon}"></i></span>
+                        <span class="metric-card-label">${label}</span>
+                        <span class="metric-card-value">${value}</span>
+                        ${sub ? `<span class="metric-card-sub">${sub}</span>` : ''}
+                    </article>`;
             }
             function metricRow(label, value) {
-                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <span style="font-size:12px;color:var(--tx3);">${label}</span>
-                        <span style="font-size:12px;color:var(--tx);font-family:var(--mono);">${value}</span>
+                return `<div class="metric-row">
+                        <span class="metric-row-label">${label}</span>
+                        <span class="metric-row-value">${value}</span>
                     </div>`;
             }
-            function metricSection(title, rows) {
-                return `<div style="background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;">
-                        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:6px;">${title}</div>
+            function metricSection(title, icon, rows) {
+                return `<section class="metric-section">
+                        <h4 class="metric-section-title"><i class="fas fa-${icon}"></i>${title}</h4>
                         ${rows}
-                    </div>`;
+                    </section>`;
             }
 
             let _totalFetches = 0, _totalBytes = 0, _cacheHits = 0;
@@ -21144,43 +22577,42 @@ _VIEWER_DL_JS +
                 const queued = fetchQueue?.length ?? 0;
 
                 const memBar = memPct != null
-                    ? `<div style="height:3px;background:var(--bd);border-radius:2px;margin-top:6px;overflow:hidden;"><div style="height:100%;width:${memPct}%;background:rgba(100,210,255,0.6);border-radius:2px;transition:width .4s;"></div></div>`
+                    ? `<div class="metric-progress" role="progressbar" aria-label="JavaScript heap usage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.min(100, memPct)}"><span style="width:${Math.min(100, memPct)}%;"></span></div>`
                     : '';
 
                 metricsBody.innerHTML = `
-                        <!-- Single row: 5 hero stats + sections all side by side -->
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px;">
-                            ${metricCard('clock', 'Uptime', fmtUptime(uptime), 'since load')}
-                            ${metricCard('layer-group', 'Open Tabs', tabCount, tabCount === 1 ? 'tab' : 'tabs')}
-                            ${metricCard('bolt', 'Active Requests', `${inFlight}/${MAX_CONCURRENT}`, queued ? `+${queued} queued` : 'idle', 'var(--warn)')}
-                            ${metricCard('database', 'Page Cache', cacheCount + '', 'in-memory entries', 'var(--ok)')}
-                            <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:12px 14px;">
-                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-                                    <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);">JS Heap</span>
-                                    ${memPct != null ? `<span style="margin-left:auto;font-size:10px;color:var(--tx3);font-family:var(--mono);">${memPct}%</span>` : ''}
+                        <div class="metrics-overview">
+                            ${metricCard('clock', 'Uptime', fmtUptime(uptime), 'since Scout started', 'uptime')}
+                            ${metricCard('layer-group', 'Open Tabs', tabCount, tabCount === 1 ? 'open browser tab' : 'open browser tabs', 'tabs')}
+                            ${metricCard('bolt', 'Active Requests', `${inFlight}/${MAX_CONCURRENT}`, queued ? `${queued} waiting in queue` : 'no requests queued', 'requests')}
+                            ${metricCard('database', 'Page Cache', cacheCount + '', 'in-memory entries', 'cache')}
+                            <article class="metric-card heap">
+                                <div class="metric-card-icon"><i class="fas fa-microchip"></i></div>
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <span class="metric-card-label">JS Heap</span>
+                                    ${memPct != null ? `<span style="margin-left:auto;font-size:10px;color:#91a8c8;font-family:var(--mono);">${memPct}%</span>` : ''}
                                 </div>
                                 ${memUsed != null
-                        ? `<div style="font-size:18px;font-weight:700;color:var(--tx);font-family:var(--mono);line-height:1;">${fmtBytes(memUsed)}</div>
-                                   <div style="font-size:11px;color:var(--tx3);margin-top:2px;">of ${fmtBytes(memTotal)}</div>
+                        ? `<div class="metric-card-value">${fmtBytes(memUsed)}</div>
+                                   <div class="metric-card-sub">of ${fmtBytes(memTotal)}</div>
                                    ${memBar}`
-                        : `<div style="font-size:12px;color:var(--tx3);">Not available</div>`}
-                            </div>
+                        : `<div class="metric-card-sub">Not available in this browser</div>`}
+                            </article>
                         </div>
 
-                        <!-- Second row: network | storage | page performance -->
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-                            ${metricSection('Network',
+                        <div class="metrics-details">
+                            ${metricSection('Network', 'globe',
                                 metricRow('WISP endpoint', (WISP || '-').replace('wss://', '').replace(/\/$/, '')) +
                                 metricRow('Connection type', connType) +
                                 metricRow('Round-trip time', rtt) +
                                 metricRow('Downlink', downlink)
                             )}
-                            ${metricSection('Storage',
+                            ${metricSection('Storage', 'hard-drive',
                                 metricRow('Used', idbSize) +
                                 metricRow('Quota', idbQuota) +
                                 metricRow('localStorage', lsSize)
                             )}
-                            ${metricSection('Page Performance',
+                            ${metricSection('Page Performance', 'gauge-high',
                                 (pageLoadMs != null ? metricRow('Page load time', pageLoadMs + ' ms') : '') +
                                 (fcpMs != null ? metricRow('First contentful paint', fcpMs + ' ms') : '') +
                                 metricRow('Resources loaded', totalResources + (totalResBytes ? ` (${fmtBytes(totalResBytes)} transferred)` : '')) +
@@ -21188,6 +22620,9 @@ _VIEWER_DL_JS +
                             )}
                         </div>
                     `;
+                if (metricsUpdated) {
+                    metricsUpdated.textContent = `Updated ${new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' })}`;
+                }
             }
 
             function showMetrics() {
@@ -21213,7 +22648,6 @@ _VIEWER_DL_JS +
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && metricsModal.style.display === 'flex') hideMetrics(); });
 
             devToggle.onclick = () => toggleLogs();
-            codeBtn.onclick = () => toggleElements();
             if (refreshElements) {
                 refreshElements.onclick = () => inspectCurrentPage();
             }
@@ -21224,8 +22658,68 @@ _VIEWER_DL_JS +
             // remember the fastest healthy relay as next launch's startup default.
             Promise.resolve(benchmarkWispPool()).then(rememberFastestRelay, () => {});
 
+            const settingsSearch = $('settingsSearch');
+            const settingsSearchStatus = $('settingsSearchStatus');
+            function filterSettings() {
+                if (!settingsSearch) return;
+                const query = settingsSearch.value.trim().toLocaleLowerCase();
+                const sections = [...document.querySelectorAll('.settings-section')];
+                const navItems = [...document.querySelectorAll('.settings-nav-item')];
+                if (!query) {
+                    sections.forEach(section => {
+                        section.querySelectorAll('.settings-card').forEach(card => { card.style.display = ''; });
+                        const active = document.querySelector('.settings-nav-item.active')?.dataset.section || 'skins';
+                        const key = active === 'tutorial' ? 'tutorial-page' : active;
+                        section.style.display = section.dataset.section === key ? 'flex' : 'none';
+                    });
+                    navItems.forEach(item => { item.hidden = false; });
+                    if (settingsSearchStatus) settingsSearchStatus.textContent = '';
+                    return;
+                }
+
+                let matches = 0;
+                const matchingSections = new Set();
+                sections.forEach(section => {
+                    const cards = [...section.querySelectorAll('.settings-card')];
+                    if (cards.length) {
+                        let sectionMatches = 0;
+                        cards.forEach(card => {
+                            const found = card.textContent.toLocaleLowerCase().includes(query);
+                            card.style.display = found ? '' : 'none';
+                            if (found) sectionMatches++;
+                        });
+                        section.style.display = sectionMatches ? 'flex' : 'none';
+                        if (sectionMatches) {
+                            matches += sectionMatches;
+                            matchingSections.add(section.dataset.section);
+                        }
+                    } else {
+                        const found = section.textContent.toLocaleLowerCase().includes(query);
+                        section.style.display = found ? 'flex' : 'none';
+                        if (found) {
+                            matches++;
+                            matchingSections.add(section.dataset.section);
+                        }
+                    }
+                });
+                navItems.forEach(item => {
+                    const section = item.dataset.section === 'tutorial' ? 'tutorial-page' : item.dataset.section;
+                    item.hidden = !matchingSections.has(section);
+                });
+                if (settingsSearchStatus) {
+                    settingsSearchStatus.textContent = matches
+                        ? `${matches} matching setting group${matches === 1 ? '' : 's'}`
+                        : 'No matching settings';
+                }
+            }
+            if (settingsSearch) settingsSearch.addEventListener('input', filterSettings);
+
             document.querySelectorAll('.settings-nav-item').forEach(navBtn => {
                 navBtn.addEventListener('click', () => {
+                    if (settingsSearch?.value) {
+                        settingsSearch.value = '';
+                        filterSettings();
+                    }
                     const section = navBtn.dataset.section;
                     const settingsUrl = `gust://settings/${section}`;
                     urlInput.value = settingsUrl;
@@ -21341,7 +22835,7 @@ _VIEWER_DL_JS +
                         e.stopPropagation();
                         selectedEngine = btn.dataset.engine;
                         try { ls.setItem('gust:engine:v1', selectedEngine); } catch { }
-                        ntEngineLabel.textContent = selectedEngine === 'custom' ? getCustomEngineName() : btn.textContent;
+                        ntEngineLabel.textContent = btn.textContent;
 
                         ntEngineDropdown.querySelectorAll('button').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
@@ -21369,9 +22863,6 @@ _VIEWER_DL_JS +
             ntSearch.onkeydown = (e) => {
                 if (e.key === "Enter") ntSearchBtn.click();
             };
-            const ntGithubBtn = $("ntGithubBtn");
-            if (ntGithubBtn) ntGithubBtn.onclick = () => window.open("https://github.com/nautilus-os/GUST", "_blank", "noopener,noreferrer");
-
             ntWallpaperBtn.onclick = () => {
                 $("wallpaperUrlInput").value = "";
                 $("wallpaperModal").style.display = "flex";
@@ -21524,7 +23015,7 @@ _VIEWER_DL_JS +
                             selectedEngine = 'ddg';
                             try { ls.setItem('gust:engine:v1', 'ddg'); } catch { }
                         }
-                        const engineNames = { brave: 'Brave', ddg: 'DuckDuckGo', bing: 'Bing', custom: getCustomEngineName() };
+                        const engineNames = { brave: 'Brave', ddg: 'DuckDuckGo', bing: 'Bing' };
                         ntEngineLabel.textContent = engineNames[selectedEngine] || 'DuckDuckGo';
                         ntEngineDropdown.querySelectorAll('button').forEach(b => {
                             b.classList.toggle('active', b.dataset.engine === selectedEngine);
@@ -21746,14 +23237,14 @@ _VIEWER_DL_JS +
                 el.innerHTML =
                     '<div class="xs-wrap">' +
                     '<div class="xs-head"><div class="xs-logo"><i class="fas fa-puzzle-piece"></i></div>' +
-                    '<div><div class="xs-title">GUST Extensions<small>Install real Chrome extensions — powered by the Chrome Web Store</small></div></div></div>' +
+                    '<div><div class="xs-title">Scout Extensions<small>Install real Chrome extensions — powered by the Chrome Web Store</small></div></div></div>' +
                     '<div class="xs-searchrow">' +
                     '<div class="xs-search"><i class="fas fa-magnifying-glass"></i><input id="xsSearch" placeholder="Search the Chrome Web Store" autocomplete="off" spellcheck="false"></div>' +
                     '<button class="xs-btn primary" id="xsSearchBtn"><i class="fas fa-magnifying-glass"></i> Search</button>' +
                     '<button class="xs-btn" id="xsInstallBtn"><i class="fas fa-link"></i> Install by URL / ID</button>' +
                     '<button class="xs-btn" id="xsFileBtn"><i class="fas fa-folder-open"></i> Load file</button>' +
                     '</div>' +
-                    '<div class="xs-note">Google\'s store app can\'t run through the proxy, so GUST installs the real extension package directly. ' +
+                    '<div class="xs-note">Google\'s store app can\'t run through the proxy, so Scout installs the real extension package directly. ' +
                     '<a id="xsRealStore">Open the original store page anyway →</a></div>' +
                     '<div id="xsInstalledSec"></div>' +
                     '<div class="xs-sec" id="xsResultsTitle">Popular extensions</div>' +
@@ -21785,7 +23276,7 @@ _VIEWER_DL_JS +
                     if (btn) { btn.classList.add('installed'); btn.innerHTML = '<i class="fas fa-check"></i> Added'; }
                     log('<i class="fas fa-puzzle-piece" style="color:#a78bfa"></i> Installed extension from Web Store', 'ok');
                 } catch (e) {
-                    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-plus"></i> Add to GUST'; }
+                    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-plus"></i> Add to Scout'; }
                     alert('Could not install: ' + (e && e.message || e) + '\n\nThemes/apps aren\'t supported (extensions only). You can also download the .crx and use "Load file".');
                 } finally { _xsInstalling.delete(sid); }
             }
@@ -21935,13 +23426,10 @@ _VIEWER_DL_JS +
                 const container = $("settingsEngineRows");
                 if (!container) return;
                 container.innerHTML = "";
-                const customName = getCustomEngineName();
-                const customUrl = (function () { try { return ls.getItem(CUSTOM_SEARCH_URL_KEY); } catch { return ""; } })();
                 const engines = [
                     { key: "brave", name: "Brave", url: SEARCH_ENGINES.brave },
                     { key: "ddg", name: "DuckDuckGo", url: SEARCH_ENGINES.ddg },
-                    { key: "bing", name: "Bing", url: SEARCH_ENGINES.bing },
-                    { key: "custom", name: customName, url: customUrl || SEARCH_ENGINES.custom }
+                    { key: "bing", name: "Bing", url: SEARCH_ENGINES.bing }
                 ];
                 engines.forEach(eng => {
                     const btn = document.createElement("button");
@@ -21953,13 +23441,11 @@ _VIEWER_DL_JS +
                     btn.onclick = () => {
                         selectedEngine = eng.key;
                         try { ls.setItem('gust:engine:v1', selectedEngine); } catch { }
-                        if (ntEngineLabel) ntEngineLabel.textContent = selectedEngine === 'custom' ? getCustomEngineName() : eng.name;
-                        updateDependsOn();
+                        if (ntEngineLabel) ntEngineLabel.textContent = eng.name;
                         renderEngineButtons();
                     };
                     container.appendChild(btn);
                 });
-                updateDependsOn();
             }
 
             function wireSettingsEvents() {
@@ -22460,13 +23946,31 @@ _VIEWER_DL_JS +
                 const spellSwitch = $("settingsSpellSwitch");
                 if (spellSwitch) {
                     const spellKey = 'gust:spellcheck:v1';
-                    const spellOn = ls.getItem(spellKey) === 'true';
+                    let spellOn = ls.getItem(spellKey) === 'true';
+                    const spellSelector = 'input:not([type]), input[type="text"], input[type="search"], textarea, [contenteditable]:not([contenteditable="false"])';
+                    const applySpellcheck = (root) => {
+                        if (root.nodeType === Node.ELEMENT_NODE && root.matches(spellSelector)) root.spellcheck = spellOn;
+                        root.querySelectorAll?.(spellSelector).forEach(el => el.spellcheck = spellOn);
+                    };
+                    const spellObserver = new MutationObserver(records => {
+                        records.forEach(record => {
+                            if (record.type === 'attributes') applySpellcheck(record.target);
+                            else record.addedNodes.forEach(applySpellcheck);
+                        });
+                    });
+                    spellObserver.observe(document.documentElement, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true,
+                        attributeFilter: ['contenteditable', 'type']
+                    });
+                    applySpellcheck(document);
                     spellSwitch.classList.toggle("on", spellOn);
-                    document.querySelectorAll('input[type=text], textarea').forEach(el => el.spellcheck = spellOn);
                     spellSwitch.onclick = () => {
                         const nowOn = spellSwitch.classList.toggle("on");
+                        spellOn = nowOn;
                         try { ls.setItem(spellKey, nowOn ? 'true' : 'false'); } catch (_) { }
-                        document.querySelectorAll('input[type=text], textarea').forEach(el => el.spellcheck = nowOn);
+                        applySpellcheck(document);
                         try { frame.contentWindow?.postMessage({ type: 'gust:spellcheck', enabled: nowOn }, '*'); } catch (_) { }
                     };
                 }
@@ -22497,64 +24001,6 @@ _VIEWER_DL_JS +
                     };
                 });
 
-                // ── Custom search engine ────────────────────────────────
-                const customSearchInput = $("customSearchUrlInput");
-                const customSearchSave = $("customSearchSaveBtn");
-                const customSearchReset = $("customSearchResetBtn");
-                const customNameInput = $("customSearchNameInput");
-                const customNameSave = $("customSearchNameSaveBtn");
-                const customNameReset = $("customSearchNameResetBtn");
-                if (customNameInput) {
-                    try {
-                        const saved = ls.getItem(CUSTOM_SEARCH_NAME_KEY);
-                        if (saved) customNameInput.value = saved;
-                    } catch (_) {}
-                }
-                if (customNameSave && customNameInput) {
-                    customNameSave.onclick = () => {
-                        const val = customNameInput.value.trim() || "Custom";
-                        try { ls.setItem(CUSTOM_SEARCH_NAME_KEY, val); } catch (_) {}
-                        if (selectedEngine === "custom" && ntEngineLabel) ntEngineLabel.textContent = val;
-                        renderEngineButtons();
-                    };
-                }
-                if (customNameReset && customNameInput) {
-                    customNameReset.onclick = () => {
-                        try { ls.removeItem(CUSTOM_SEARCH_NAME_KEY); } catch (_) {}
-                        customNameInput.value = "Custom";
-                        if (selectedEngine === "custom" && ntEngineLabel) ntEngineLabel.textContent = "Custom";
-                        renderEngineButtons();
-                    };
-                }
-                if (customSearchInput) {
-                    try {
-                        const saved = ls.getItem(CUSTOM_SEARCH_URL_KEY);
-                        if (saved) customSearchInput.value = saved;
-                    } catch (_) {}
-                }
-                if (customSearchSave) {
-                    customSearchSave.onclick = () => {
-                        const val = customSearchInput.value.trim();
-                        if (!val || !val.includes("{q}")) {
-                            alert("Please enter a valid search URL with {q} as the query placeholder.");
-                            return;
-                        }
-                        try { ls.setItem(CUSTOM_SEARCH_URL_KEY, val); } catch (_) {}
-                        if (selectedEngine === "custom" && ntEngineLabel) ntEngineLabel.textContent = getCustomEngineName();
-                        renderEngineButtons();
-                    };
-                }
-                if (customSearchReset) {
-                    customSearchReset.onclick = () => {
-                        try { ls.removeItem(CUSTOM_SEARCH_URL_KEY); } catch (_) {}
-                        customSearchInput.value = SEARCH_ENGINES.custom;
-                        if (selectedEngine === "custom" && ntEngineLabel) ntEngineLabel.textContent = getCustomEngineName();
-                        renderEngineButtons();
-                    };
-                }
-                // Initial depends-on state
-                updateDependsOn();
-                // ───────────────────────────────────────────────────────────
             }
 
             // animateClose: adds .closing class, waits for animation, then hides the element
@@ -22689,8 +24135,8 @@ _VIEWER_DL_JS +
             }
 
             function wireShortcutEditButtons() {
-                const shortcutNames = ['newtab', 'closetab', 'reload', 'bookmark', 'focusurl', 'settings', 'logs', 'inspector', 'history', 'metrics', 'fullscreen', 'find', 'ai'];
-                const defaultKeys = ['T', 'W', 'R', 'D', 'L', ',', 'G', 'I', 'H', 'M', 'K', 'F', 'A'];
+                const shortcutNames = ['newtab', 'closetab', 'reload', 'bookmark', 'focusurl', 'settings', 'logs', 'history', 'metrics', 'fullscreen', 'find', 'ai'];
+                const defaultKeys = ['T', 'W', 'R', 'D', 'L', ',', 'G', 'H', 'M', 'K', 'F', 'A'];
                 document.querySelectorAll('.settings-section[data-section="shortcuts"] .settings-btn-icon').forEach((btn, idx) => {
                     const scIdx = Math.floor(idx / 2); 
                     const isReset = idx % 2 === 1;
@@ -23088,14 +24534,13 @@ _VIEWER_DL_JS +
                 focusurl: () => { urlInput.focus(); urlInput.select(); },
                 settings: () => showSettingsPage(true),
                 logs: () => { if (logsEl) logsEl.classList.toggle('hidden'); },
-                inspector: () => { toggleElements(); },
                 history: () => { if (historyPopup.classList.contains('open')) hideHistoryPopup(); else showHistoryPopup(); },
                 metrics: () => { metricsModal.style.display === 'flex' ? hideMetrics() : showMetrics(); },
                 fullscreen: () => { if (!document.fullscreenElement) _doRequestFullscreen().catch(() => {}); else document.exitFullscreen(); },
                 ai: () => { const sb = document.getElementById('aiSidebar'), btn = document.getElementById('aiBtn'); if (sb && btn) btn.click(); },
                 find: () => toggleFindBar()
             };
-            const SC_DEFAULTS = { newtab: 'T', closetab: 'W', reload: 'R', bookmark: 'D', focusurl: 'L', settings: ',', logs: 'G', inspector: 'I', history: 'H', metrics: 'M', fullscreen: 'K', find: 'F', ai: 'A' };
+            const SC_DEFAULTS = { newtab: 'T', closetab: 'W', reload: 'R', bookmark: 'D', focusurl: 'L', settings: ',', logs: 'G', history: 'H', metrics: 'M', fullscreen: 'K', find: 'F', ai: 'A' };
             let scMap = {}; 
 
             function buildShortcutMap() {
@@ -23135,9 +24580,9 @@ _VIEWER_DL_JS +
             const tutSteps = [
                 {
                     target: null,
-                    icon: '<i class="fas fa-wind"></i>',
-                    title: 'Welcome to GUST',
-                    body: 'A fast, private browser by Nautilus Labs. This tour covers all the key controls and takes under a minute, and can be restarted anytime from Settings.',
+                    icon: '<i class="fas fa-earth-americas"></i>',
+                    title: 'Welcome to Scout',
+                    body: 'A fast, private browser. This tour covers all the key controls and takes under a minute, and can be restarted anytime from Settings.',
                     pos: 'center'
                 },
                 {
@@ -23151,7 +24596,7 @@ _VIEWER_DL_JS +
                     target: '#settingsBtn',
                     icon: '<i class="fas fa-gear"></i>',
                     title: 'Settings',
-                    body: 'Configure the WISP server, search engine, wallpaper, font size, cache, shortcuts and more. You can also read about Gust or restart the tutorial from here.',
+                    body: 'Configure the WISP server, search engine, wallpaper, font size, cache, shortcuts and more. You can also read about Scout or restart the tutorial from here.',
                     pos: 'below'
                 },
                 {
@@ -23205,16 +24650,9 @@ _VIEWER_DL_JS +
                     pos: 'below-left'
                 },
                 {
-                    target: '#codeBtn',
-                    icon: '<i class="fas fa-code"></i>',
-                    title: 'Page Inspector',
-                    body: 'Inspect the live DOM of any page. Browse the element tree, view computed styles, box model and attributes. Works even if devtools are disabled in your browser.',
-                    pos: 'below-left'
-                },
-                {
                     target: '#aiBtn',
                     icon: '<i class="fas fa-wand-magic-sparkles"></i>',
-                    title: 'GUST Assistant',
+                    title: 'Scout Assistant',
                     body: 'Opens the AI sidebar. Ask questions about the current page, or just use it like a normal AI chatbot.',
                     pos: 'below-left'
                 },
@@ -23222,7 +24660,7 @@ _VIEWER_DL_JS +
                     target: '#blockToggle',
                     icon: '<i class="fas fa-shield-halved"></i>',
                     title: 'Ad and Tracker Blocking',
-                    body: 'GUST blocks ads and trackers by default. The badge shows your current status. Click on it to toggle it off if a site is not loading correctly.',
+                    body: 'Scout blocks ads and trackers by default. The badge shows your current status. Click on it to toggle it off if a site is not loading correctly.',
                     pos: 'below-left'
                 },
                 {
@@ -23244,7 +24682,7 @@ _VIEWER_DL_JS +
                     target: '#ntFavAddBtn',
                     icon: '<i class="fas fa-star"></i>',
                     title: 'Add Favorite',
-                    body: 'Pin your most-visited sites as favorites on the new tab page for instant access. You can add up to 5. Discord Anywhere — a full Discord client built into GUST — comes pinned by default.',
+                    body: 'Pin your most-visited sites as favorites on the new tab page for instant access. You can add up to 5. Discord Anywhere — a full Discord client built into Scout — comes pinned by default.',
                     pos: 'below',
                     requiresNewTab: true,
                     targetFallback: '.nt-fav-add'
@@ -23258,18 +24696,10 @@ _VIEWER_DL_JS +
                     requiresNewTab: true
                 },
                 {
-                    target: '#ntGithubBtn',
-                    icon: '<i class="fab fa-github"></i>',
-                    title: 'GitHub',
-                    body: 'GUST is open source. Click to view the repository, report issues, or contribute.',
-                    pos: 'above',
-                    requiresNewTab: true
-                },
-                {
                     target: null,
                     icon: '<i class="fas fa-check-circle"></i>',
                     title: "You're all set!",
-                    body: "That's the full tour! GUST is made with lots of love by the Nautilus Labs dev team, and we'd be overjoyed if you gave our repository a star on GitHub. Enjoy the experience!",
+                    body: "That's the full tour! Scout is built for speed and privacy. Enjoy the experience!",
                     pos: 'center'
                 }
             ];
@@ -23636,7 +25066,7 @@ _VIEWER_DL_JS +
                         const cm = document.getElementById("contextMenu");
                         if (cm) cm.classList.remove("active");
 
-                        if (typeof logsEl !== "undefined" && logsEl) logsEl.classList.add("hidden");
+                        if (typeof logsEl !== "undefined" && logsEl) { logsEl.classList.add("hidden"); $('devToggle')?.classList.remove('active'); $('devToggle')?.setAttribute('aria-pressed', 'false'); }
                         if (typeof elementsEl !== "undefined" && elementsEl) elementsEl.classList.add("hidden");
 
                         setTimeout(() => {
@@ -23922,8 +25352,8 @@ _VIEWER_DL_JS +
                 // Docs: https://github.com/pollinations/pollinations/blob/main/APIDOCS.md
                 const POLLINATIONS = 'https://text.pollinations.ai/openai';
                 const MODEL        = 'openai';
-                const _SYSTEM_CTX   = 'You are the GUST Browser\'s AI assistant, GUST Assistant. Reply like a smart friend texting: natural and direct. Be concise but don\'t force brevity if the topic requires more detail. You cannot read the page by default and you are not given the URL or title. If the user asks about the specific content of their active tab, the page URL, or the page title, state that you need permission to access this information and always append *exactly* this string with zero changes: `function assistantRequestPageContext` — no variations, no abbreviations, no different wording will work. Do NOT write "assistantPageContext", "requestPageContext", "getPageContext", "viewPageContent", or anything else. It MUST be `function assistantRequestPageContext` verbatim. If the user responds with "Approved" followed by page context (content, URL, title, language, viewport), use that information to answer their questions about the page. If the user responds with "Denied" to your request, accept the denial and move on.';
-                const _SYSTEM_NOCTX = 'You are the GUST Browser\'s AI assistant, GUST Assistant. Reply like a smart friend texting: natural, direct, and to the point. Be concise but don\'t force brevity if the topic requires more detail. Only state facts. Do not guess or speculate. If you don\'t know something, say so.';
+                const _SYSTEM_CTX   = 'You are the Scout Browser\'s AI assistant, Scout Assistant. Reply like a smart friend texting: natural and direct. Be concise but don\'t force brevity if the topic requires more detail. You cannot read the page by default and you are not given the URL or title. If the user asks about the specific content of their active tab, the page URL, or the page title, state that you need permission to access this information and always append *exactly* this string with zero changes: `function assistantRequestPageContext` — no variations, no abbreviations, no different wording will work. Do NOT write "assistantPageContext", "requestPageContext", "getPageContext", "viewPageContent", or anything else. It MUST be `function assistantRequestPageContext` verbatim. If the user responds with "Approved" followed by page context (content, URL, title, language, viewport), use that information to answer their questions about the page. If the user responds with "Denied" to your request, accept the denial and move on.';
+                const _SYSTEM_NOCTX = 'You are the Scout Browser\'s AI assistant, Scout Assistant. Reply like a smart friend texting: natural, direct, and to the point. Be concise but don\'t force brevity if the topic requires more detail. Only state facts. Do not guess or speculate. If you don\'t know something, say so.';
                 function _systemPrompt() { return _useContext ? _SYSTEM_CTX : _SYSTEM_NOCTX; }
 
                 let _history   = [];
@@ -23953,7 +25383,7 @@ _VIEWER_DL_JS +
                     const logsEl2 = document.getElementById('logsPanel') || document.querySelector('.logs-panel') || (typeof logsEl !== 'undefined' ? logsEl : null);
                     const elemsEl2 = document.getElementById('elementsPanel') || document.querySelector('.elements-panel') || (typeof elementsEl !== 'undefined' ? elementsEl : null);
                     if (logsEl2 && !logsEl2.classList.contains('hidden')) { logsEl2.classList.add('hidden'); document.getElementById('devToggle')?.classList.remove('active'); }
-                    if (elemsEl2 && !elemsEl2.classList.contains('hidden')) { elemsEl2.classList.add('hidden'); document.getElementById('codeBtn')?.classList.remove('active'); const _ov = document.getElementById('elemHighlightOverlay'); if (_ov) _ov.style.display = 'none'; }
+                    if (elemsEl2 && !elemsEl2.classList.contains('hidden')) { elemsEl2.classList.add('hidden'); const _ov = document.getElementById('elemHighlightOverlay'); if (_ov) _ov.style.display = 'none'; }
                     aiSidebar.classList.remove('hidden'); aiBtn.classList.add('active'); aiBtn.classList.remove('has-new'); document.body.classList.add('panel-open'); _updateFindBarPos(); aiTextarea && aiTextarea.focus();
                 }
                 function closeAI() { aiSidebar.classList.add('hidden'); aiBtn.classList.remove('active'); document.body.classList.remove('panel-open'); _updateFindBarPos(); }
@@ -24134,7 +25564,7 @@ _VIEWER_DL_JS +
                         bar = document.createElement('div');
                         bar.id = 'aiContinueBar';
                         bar.className = 'ai-permission-bar';
-                        bar.innerHTML = '<span>GUST Assistant was cut off. Continue?</span><div class="perm-btns"><button class="perm-check" id="aiContinueBtn" title="Continue"><i class="fas fa-check"></i></button></div>';
+                        bar.innerHTML = '<span>Scout Assistant was cut off. Continue?</span><div class="perm-btns"><button class="perm-check" id="aiContinueBtn" title="Continue"><i class="fas fa-check"></i></button></div>';
                         const inputArea = document.querySelector('.ai-input-area');
                         if (inputArea) inputArea.appendChild(bar);
                         bar.querySelector('#aiContinueBtn').onclick = () => {
@@ -24350,7 +25780,7 @@ _VIEWER_DL_JS +
                     '<button class="gx-topbtn" id="gxOBtn" title="Menu"><i class="fa-brands fa-opera"></i></button>' +
                     '<button id="skinTabSearchBtn" title="Search tabs"></button>');
                 navbar.insertAdjacentHTML('beforeend',
-                    '<button class="tool-btn" id="skinExtShieldBtn" title="GUST Shields" style="display:none;"><i class="fas fa-shield-halved"></i></button>' +
+                    '<button class="tool-btn" id="skinExtShieldBtn" title="Scout Shields" style="display:none;"><i class="fas fa-shield-halved"></i></button>' +
                     '<button class="tool-btn" id="skinPuzzleBtn" title="Extensions"></button>' +
                     '<button class="tool-btn" id="skinAvatarBtn" title="You"><span class="sk-avatar">G</span></button>' +
                     '<button class="tool-btn" id="skinMenuBtn" title="Customize and control"><i class="fas fa-ellipsis-vertical" id="skinMenuIcon"></i></button>');
@@ -24505,15 +25935,14 @@ _VIEWER_DL_JS +
                     }),
                     downloads: mi('fa-solid fa-download', 'Downloads', () => go('gust://settings/filesandmedia')),
                     find: mi('fa-solid fa-magnifying-glass', 'Find in page…', () => { try { toggleFindBar(); } catch (_) {} }),
-                    assistant: mi('fa-solid fa-wand-magic-sparkles', 'GUST Assistant', () => { const b = $('aiBtn'); if (b) b.click(); }, { accel: 'Alt+A' }),
+                    assistant: mi('fa-solid fa-wand-magic-sparkles', 'Scout Assistant', () => { const b = $('aiBtn'); if (b) b.click(); }, { accel: 'Alt+A' }),
                     metrics: mi('fa-solid fa-gauge-high', 'Browser metrics', () => { const b = $('metricsBtn'); if (b) b.click(); }),
-                    inspector: mi('fa-solid fa-code', 'Page inspector', () => { const b = $('codeBtn'); if (b) b.click(); }),
                     logs: mi('fa-solid fa-terminal', 'Developer logs', () => { const b = $('devToggle'); if (b) b.click(); }),
                     shields: mi('fa-solid fa-shield-halved', 'Shields & adblock', a => openShieldsAt(a)),
                     skins: mi('fa-solid fa-mask', 'Skins', () => go('gust://settings/skins')),
                     settings: mi('fa-solid fa-gear', 'Settings', () => go('gust://settings')),
                     fullscreen: mi('fa-solid fa-expand', 'Fullscreen', () => { const b = $('fullscreenBtn'); if (b) b.click(); }),
-                    about: mi('fa-solid fa-circle-info', 'About GUST', () => go('gust://settings/about'))
+                    about: mi('fa-solid fa-circle-info', 'About Scout', () => go('gust://settings/about'))
                 };
 
                 // ── Chrome 150 ⋮ menu — full item set with accelerators & submenus ──
@@ -24568,11 +25997,10 @@ _VIEWER_DL_JS +
                         mi('mi:open-in-new', 'Share...', () => { try { if (navigator.share) navigator.share({ url: urlInput.value }); else copyPageUrl(); } catch (_) {} })
                     ] }),
                     mi('mi:build', 'More tools', null, { sub: [
-                        mi('fa-solid fa-wand-magic-sparkles', 'GUST Assistant', () => { const b = $('aiBtn'); if (b) b.click(); }, { accel: 'Alt+A' }),
+                        mi('fa-solid fa-wand-magic-sparkles', 'Scout Assistant', () => { const b = $('aiBtn'); if (b) b.click(); }, { accel: 'Alt+A' }),
                         mi('mi:download', 'Save page as...', savePageAs, { accel: 'Ctrl+S' }),
                         mi('mi:edit', 'Name window...', () => { try { const n = prompt('Window name:', document.title); if (n) document.title = n; } catch (_) {} }),
                         mi('mi:visibility', 'Task manager', () => { const b = $('metricsBtn'); if (b) b.click(); }, { accel: 'Shift+Esc' }),
-                        mi('mi:build', 'Developer tools', () => { const b = $('codeBtn'); if (b) b.click(); }, { accel: 'F12' })
                     ] }),
                     SEP,
                     mi('mi:help', 'Help', null, { sub: [
@@ -24587,9 +26015,9 @@ _VIEWER_DL_JS +
                 const MENUS = {
                     brave: [A.newtab, A.newwin, SEP, A.history, A.downloads, A.bookmarks, SEP,
                         Object.assign({}, A.shields, { label: 'Brave Shields', icon: 'fa-brands fa-brave' }), A.find, SEP,
-                        HD('More tools'), A.assistant, A.metrics, A.inspector, A.logs, SEP, A.skins, A.settings, SEP, A.fullscreen, A.about],
+                        HD('More tools'), A.assistant, A.metrics, A.logs, SEP, A.skins, A.settings, SEP, A.fullscreen, A.about],
                     firefox: [A.newtab, A.newwin, SEP, A.bookmarks, A.history, A.downloads, SEP, A.find, SEP,
-                        HD('More tools'), A.assistant, A.metrics, A.inspector, A.logs, SEP, A.skins, A.settings, SEP, A.fullscreen, A.about]
+                        HD('More tools'), A.assistant, A.metrics, A.logs, SEP, A.skins, A.settings, SEP, A.fullscreen, A.about]
                 };
                 const GX_OMENU = () => [
                     mi('', 'New tab', () => createTab(), { accel: 'Ctrl+T' }),
@@ -24801,7 +26229,7 @@ _VIEWER_DL_JS +
                     panelEl.dataset.kind = 'puzzle';
                     panelEl.innerHTML =
                         '<div class="skp-section-title">Extensions</div>' +
-                        '<button class="skp-row" id="skpExtRow"><i class="fas fa-shield-halved" style="color:#a8c7fa;width:18px;text-align:center;"></i><span class="sk-lbl">GUST Shields — ad &amp; tracker blocking</span>' +
+                        '<button class="skp-row" id="skpExtRow"><i class="fas fa-shield-halved" style="color:#a8c7fa;width:18px;text-align:center;"></i><span class="sk-lbl">Scout Shields — ad &amp; tracker blocking</span>' +
                         '<span class="skp-switch' + (extPinned ? ' on' : '') + '" id="skpExtPin" title="Pin to toolbar"></span></button>' +
                         '<div class="skp-sep"></div>' +
                         panelRow('mi:extension') + panelRow('mi:open-in-new') +
@@ -24813,7 +26241,7 @@ _VIEWER_DL_JS +
                             : { label: 'Visit Chrome Web Store', fn: () => createTab('https://chromewebstore.google.com') }
                     ];
                     const rows = panelEl.querySelectorAll('.skp-row');
-                    rows[0].querySelector('.sk-lbl') && (rows[0].querySelector('.sk-lbl').textContent = 'GUST Shields — ad & tracker blocking');
+                    rows[0].querySelector('.sk-lbl') && (rows[0].querySelector('.sk-lbl').textContent = 'Scout Shields — ad & tracker blocking');
                     rows[0].addEventListener('click', e => {
                         if (e.target.closest('#skpExtPin')) return;
                         closePanel(); openShieldsAt(anchor);
@@ -24925,7 +26353,6 @@ _VIEWER_DL_JS +
                     ['', 'fa-brands fa-twitch', 'Twitch', 'd:https://www.twitch.tv'],
                     ['flex'],
                     ['', 'fa-solid fa-terminal', 'Developer logs', 'logs'],
-                    ['', 'fa-solid fa-code', 'Page inspector', 'inspector'],
                     ['sep'],
                     ['', 'fa-regular fa-bookmark', 'Bookmarks bar', 'bookmarks'],
                     ['', 'fa-solid fa-clock-rotate-left', 'History', 'history'],
@@ -24948,7 +26375,6 @@ _VIEWER_DL_JS +
                         control: () => openGXControl(),
                         player: () => openSkinMenu(GX_PLAYER, b, { side: 'right' }),
                         logs: () => { const x = $('devToggle'); if (x) x.click(); },
-                        inspector: () => { const x = $('codeBtn'); if (x) x.click(); },
                         bookmarks: A.bookmarks.fn,
                         history: () => openHistoryAt(b),
                         downloads: A.downloads.fn,
@@ -25750,7 +27176,6 @@ _VIEWER_DL_JS +
                     mi('mi:settings', 'Settings', () => go('gust://settings')),
                     mi('mi:build', 'More Tools', null, { sub: [
                         mi('', 'Customize Zen...', zenThemePanelOpen),
-                        mi('', 'Web Developer Tools', () => { const b = $('codeBtn'); if (b) b.click(); }, { accel: 'F12' }),
                         mi('', 'Task Manager', () => { const b = $('metricsBtn'); if (b) b.click(); })
                     ] }),
                     mi('mi:help', 'Help', null, { sub: [
@@ -26958,10 +28383,9 @@ _VIEWER_DL_JS +
                         mi('mi:content-copy', 'Copy URL', copyPageUrl)
                     ] }),
                     mi('mi:build', 'More tools', null, { sub: [
-                        mi('fa-solid fa-wand-magic-sparkles', 'GUST Assistant', () => { const b = $('aiBtn'); if (b) b.click(); }, { accel: 'Alt+A' }),
+                        mi('fa-solid fa-wand-magic-sparkles', 'Scout Assistant', () => { const b = $('aiBtn'); if (b) b.click(); }, { accel: 'Alt+A' }),
                         mi('mi:download', 'Save page as...', savePageAs, { accel: 'Ctrl+S' }),
                         mi('mi:visibility', 'Task manager', () => { const b = $('metricsBtn'); if (b) b.click(); }, { accel: 'Shift+Esc' }),
-                        mi('mi:build', 'Developer tools', () => { const b = $('codeBtn'); if (b) b.click(); }, { accel: 'F12' })
                     ] }),
                     SEP,
                     mi('mi:help', 'Help', null, { sub: [
@@ -26995,10 +28419,9 @@ _VIEWER_DL_JS +
                     SEP,
                     mi('', 'Settings', () => go('gust://settings')),
                     mi('', 'More tools', null, { sub: [
-                        mi('', 'GUST Assistant', () => { const b = $('aiBtn'); if (b) b.click(); }, { accel: 'Alt+A' }),
+                        mi('', 'Scout Assistant', () => { const b = $('aiBtn'); if (b) b.click(); }, { accel: 'Alt+A' }),
                         mi('', 'Customize toolbar...', () => go('gust://settings/skins')),
                         mi('', 'Task Manager', () => { const b = $('metricsBtn'); if (b) b.click(); }, { accel: 'Shift+Esc' }),
-                        mi('', 'Web Developer Tools', () => { const b = $('codeBtn'); if (b) b.click(); }, { accel: 'F12' }),
                         mi('', 'Browser logs', () => { const b = $('devToggle'); if (b) b.click(); })
                     ] }),
                     mi('', 'Help', null, { sub: [
@@ -27114,7 +28537,6 @@ _VIEWER_DL_JS +
                     ['metrics', 'Metrics button', '#metricsBtn', 0, 'grid'],
                     ['settings', 'Settings gear', '#settingsBtn', 1, 'grid'],
                     ['logs', 'Dev-logs button', '#devToggle', 0, 'grid'],
-                    ['inspector', 'Inspector button', '#codeBtn', 0, 'grid'],
                     ['ai', 'AI assistant button', '#aiBtn', 1, 'grid'],
                     ['adblock', 'Adblock pill', '#blockToggle', 1, 'grid'],
                     ['status', 'Status pill', '.status-pill', 1, 'flex'],
@@ -27162,7 +28584,7 @@ _VIEWER_DL_JS +
                     // Donor masks hide these buttons' <i> glyphs and swap in ::before masks —
                     // but only for the buttons the mask actually shows. Mod-enabled buttons
                     // with no mask replacement need their FontAwesome glyphs back.
-                    mcss += 'html[data-skin="plus"] :is(#home, #findOmniBtn, #go, #devToggle, #codeBtn, #aiBtn) i{display:inline-block !important;}\n';
+                    mcss += 'html[data-skin="plus"] :is(#home, #findOmniBtn, #go, #devToggle, #aiBtn) i{display:inline-block !important;}\n';
                     const el = document.createElement('style');
                     el.id = 'plusModStyles';
                     el.textContent = mcss;

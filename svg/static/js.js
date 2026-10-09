@@ -224,7 +224,6 @@
   const blockToggle = $("blockToggle");
   const blockState = $("blockState");
   const devToggle = $("devToggle");
-  const codeBtn = $("codeBtn");
   const logsEl = $("logs");
   const elementsEl = $("elements");
   const elementsTree = $("elementsTree");
@@ -321,7 +320,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Error - Gust Browser</title>
+    <title>Error - Scout Browser</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
@@ -572,8 +571,8 @@
 <body>
     <div class="error-content">
         <div class="error-brand" onclick="window.parent.postMessage({t:'n', u:'gust://newtab'}, '*')">
-            <i class="fas fa-wind"></i>
-            <span>GUST</span>
+            <i class="fas fa-earth-americas"></i>
+            <span>Scout</span>
         </div>
         
         <div class="error-header">
@@ -2360,6 +2359,8 @@
     if (!logsEl) return;
     const wasHidden = logsEl.classList.contains("hidden");
     logsEl.classList.toggle("hidden");
+    devToggle.classList.toggle("active", wasHidden);
+    devToggle.setAttribute("aria-pressed", String(wasHidden));
 
     if (wasHidden && !panelWidthPersist) {
       logsEl.style.width = "420px";
@@ -2387,7 +2388,7 @@
   function inspectCurrentPage() {
     if (pageUrl === HOME_INTERNAL || isSettingsPage(pageUrl)) {
       elementsTree.innerHTML =
-        '<li style="color: var(--tx3); padding: 8px;">Cannot inspect internal Gust pages</li>';
+        '<li style="color: var(--tx3); padding: 8px;">Cannot inspect internal Scout pages</li>';
       return;
     }
 
@@ -4122,6 +4123,24 @@ const BLOCK_ENABLED = ${JSON.stringify(!!blockEnabled)};
 const WEBRTC_BLOCK = ${JSON.stringify(!!webrtcBlock)};
 const SPOOF_UA = ${JSON.stringify(pageUA || "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")};
 const SPELLCHECK = ${JSON.stringify(!!spellcheck)};
+let spellcheckEnabled = SPELLCHECK;
+const spellcheckSelector = 'input:not([type]), input[type="text"], input[type="search"], textarea, [contenteditable]:not([contenteditable="false"])';
+const applySpellcheck = root => {
+  if (root.nodeType === Node.ELEMENT_NODE && root.matches(spellcheckSelector)) root.spellcheck = spellcheckEnabled;
+  root.querySelectorAll?.(spellcheckSelector).forEach(el => el.spellcheck = spellcheckEnabled);
+};
+try {
+  applySpellcheck(document);
+  new MutationObserver(records => records.forEach(record => {
+    if (record.type === 'attributes') applySpellcheck(record.target);
+    else record.addedNodes.forEach(applySpellcheck);
+  })).observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['contenteditable', 'type'],
+  });
+} catch(e) {}
 
 function shouldSkip(url) {
   if (!BLOCK_ENABLED) return false;
@@ -4302,7 +4321,10 @@ window.addEventListener('message', e => {
     try { document.querySelector(d.selector)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(e) {}
   }
   if (d.type === 'gust:spellcheck') {
-    try { document.querySelectorAll('input, textarea').forEach(el => el.spellcheck = !!d.enabled); } catch(e) {}
+    try {
+      spellcheckEnabled = !!d.enabled;
+      applySpellcheck(document);
+    } catch(e) {}
   }
 });
 
@@ -4971,14 +4993,14 @@ if (OrigSharedWorker) {
 // WebRTC leak prevention — stub out RTCPeerConnection and getUserMedia
 // so sites can't establish direct connections that bypass the WISP tunnel
 if (WEBRTC_BLOCK) {
-  const _noRTC = function() { throw new DOMException('WebRTC is blocked by Gust', 'NotSupportedError'); };
+  const _noRTC = function() { throw new DOMException('WebRTC is blocked by Scout', 'NotSupportedError'); };
   try { window.RTCPeerConnection = _noRTC; } catch(e) {}
   try { window.webkitRTCPeerConnection = _noRTC; } catch(e) {}
   try { window.mozRTCPeerConnection = _noRTC; } catch(e) {}
   try { window.RTCDataChannel = _noRTC; } catch(e) {}
   try {
     if (navigator.mediaDevices) {
-      navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('WebRTC is blocked by Gust', 'NotSupportedError'));
+      navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('WebRTC is blocked by Scout', 'NotSupportedError'));
     }
     navigator.getUserMedia = _noRTC;
     navigator.webkitGetUserMedia = _noRTC;
@@ -5021,7 +5043,7 @@ try {
   });
 } catch(e) {}
 
-try { document.querySelectorAll('input, textarea').forEach(el => el.spellcheck = SPELLCHECK); } catch(e) {}
+try { applySpellcheck(document); } catch(e) {}
 
 parent.postMessage({ t: 'ready' }, '*');
 })();`;
@@ -5800,7 +5822,7 @@ parent.postMessage({ t: 'ready' }, '*');
       " &nbsp;&middot;&nbsp; " +
       size +
       "</div>" +
-      '  <p class="hint">Gust doesn\'t have a built-in viewer for this file type.<br>Enable <strong style="color:#b8c4d0">Auto-download</strong> in Files &amp; Media settings to download it instead.</p>' +
+      '  <p class="hint">Scout doesn\'t have a built-in viewer for this file type.<br>Enable <strong style="color:#b8c4d0">Auto-download</strong> in Files &amp; Media settings to download it instead.</p>' +
       '  <div class="btn-row">' +
       '    <button class="btn btn-primary" onclick="go()"><i class="fas fa-arrow-rotate-left"></i> Go Back</button>' +
       '    <button class="btn btn-sec" onclick="openSettings()"><i class="fas fa-sliders"></i> File Settings</button>' +
@@ -6028,7 +6050,7 @@ parent.postMessage({ t: 'ready' }, '*');
           url,
           "Invalid Internal URL",
           "ERR_INVALID_GUST_URL",
-          `The internal address <code>${url}</code> is not a valid Gust page.`,
+          `The internal address <code>${url}</code> is not a valid Scout page.`,
           [
             "Check for typos in the address",
             "Use the Home button to return to the search page",
@@ -7157,7 +7179,7 @@ parent.postMessage({ t: 'ready' }, '*');
         errorType = "Connection Interrupted";
         errorCode = "ERR_CONNECTION_ABORTED";
         errorDescription =
-          "The connection to the proxy server was interrupted. GUST will attempt to reconnect automatically on the next request.";
+          "The connection to the proxy server was interrupted. Scout will attempt to reconnect automatically on the next request.";
         errorSuggestions = [
           "Click the reload button to try again",
           "The proxy server may have briefly disconnected",
@@ -7464,8 +7486,8 @@ parent.postMessage({ t: 'ready' }, '*');
       url.startsWith("gust://")
     ) {
       iconEl.className = "site-info-icon neutral";
-      iconI.className = "fas fa-wind";
-      title.textContent = "Gust Browser";
+      iconI.className = "fas fa-earth-americas";
+      title.textContent = "Scout Browser";
       subtitle.textContent = "Internal page";
       hostEl.textContent = "gust://";
       protoEl.innerHTML = `<span class="ok">Internal</span>`;
@@ -7661,15 +7683,11 @@ parent.postMessage({ t: 'ready' }, '*');
         }
         if (display.length > 30) display = display.slice(0, 27) + "…";
         const row = document.createElement("button");
-        row.style.cssText =
-          "display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;background:transparent;border:none;border-radius:8px;cursor:pointer;color:var(--tx2);font-size:12px;text-align:left;transition:background .1s, transform .15s, opacity .15s;opacity:0;transform:translateY(6px);";
-        row.innerHTML = `<i class="fas fa-globe" style="color:var(--tx3);width:14px;text-align:center;flex-shrink:0;transition:transform .2s cubic-bezier(.34,1.56,.64,1);"></i><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${display}</span><span style="font-size:10px;color:var(--tx3);flex-shrink:0;white-space:nowrap;">${formatHistoryTime(ts)}</span>`;
-        row.onmouseenter = () => {
-          row.style.background = "var(--surface2)";
-        };
-        row.onmouseleave = () => {
-          row.style.background = "transparent";
-        };
+        row.className = "history-item";
+        row.title = url;
+        row.style.opacity = "0";
+        row.style.transform = "translateY(6px)";
+        row.innerHTML = `<i class="fas fa-globe history-item-icon"></i><span class="history-item-host">${escapeHtml(display)}</span><span class="history-item-time">${formatHistoryTime(ts)}</span>`;
         row.onclick = () => {
           hideHistoryPopup();
           go(url);
@@ -7733,6 +7751,7 @@ parent.postMessage({ t: 'ready' }, '*');
 
   const metricsModal = $("metricsModal");
   const metricsBody = $("metricsBody");
+  const metricsUpdated = $("metricsUpdated");
   const metricsStartTime = Date.now();
 
   function fmtBytes(b) {
@@ -7749,24 +7768,25 @@ parent.postMessage({ t: 'ready' }, '*');
     if (m > 0) return `${m}m ${s % 60}s`;
     return `${s}s`;
   }
-  function metricCard(icon, label, value, sub, colorVar) {
-    return `<div style="background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;">
-                        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:2px;">${label}</div>
-                        <div style="font-size:20px;font-weight:700;color:var(--tx);font-family:var(--mono);line-height:1;">${value}</div>
-                        ${sub ? `<div style="font-size:11px;color:var(--tx3);">${sub}</div>` : ""}
-                    </div>`;
+  function metricCard(icon, label, value, sub, tone) {
+    return `<article class="metric-card ${tone}">
+                        <span class="metric-card-icon"><i class="fas fa-${icon}"></i></span>
+                        <span class="metric-card-label">${label}</span>
+                        <span class="metric-card-value">${value}</span>
+                        ${sub ? `<span class="metric-card-sub">${sub}</span>` : ""}
+                    </article>`;
   }
   function metricRow(label, value) {
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <span style="font-size:12px;color:var(--tx3);">${label}</span>
-                        <span style="font-size:12px;color:var(--tx);font-family:var(--mono);">${value}</span>
+    return `<div class="metric-row">
+                        <span class="metric-row-label">${label}</span>
+                        <span class="metric-row-value">${value}</span>
                     </div>`;
   }
-  function metricSection(title, rows) {
-    return `<div style="background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;">
-                        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:6px;">${title}</div>
+  function metricSection(title, icon, rows) {
+    return `<section class="metric-section">
+                        <h4 class="metric-section-title"><i class="fas fa-${icon}"></i>${title}</h4>
                         ${rows}
-                    </div>`;
+                    </section>`;
   }
 
   let _totalFetches = 0,
@@ -7836,35 +7856,35 @@ parent.postMessage({ t: 'ready' }, '*');
 
     const memBar =
       memPct != null
-        ? `<div style="height:3px;background:var(--bd);border-radius:2px;margin-top:6px;overflow:hidden;"><div style="height:100%;width:${memPct}%;background:rgba(100,210,255,0.6);border-radius:2px;transition:width .4s;"></div></div>`
+        ? `<div class="metric-progress" role="progressbar" aria-label="JavaScript heap usage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.min(100, memPct)}"><span style="width:${Math.min(100, memPct)}%;"></span></div>`
         : "";
 
     metricsBody.innerHTML = `
-                        <!-- Single row: 5 hero stats + sections all side by side -->
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px;">
-                            ${metricCard("clock", "Uptime", fmtUptime(uptime), "since load")}
-                            ${metricCard("layer-group", "Open Tabs", tabCount, tabCount === 1 ? "tab" : "tabs")}
-                            ${metricCard("bolt", "Active Requests", `${inFlight}/${MAX_CONCURRENT}`, queued ? `+${queued} queued` : "idle", "var(--warn)")}
-                            ${metricCard("database", "Page Cache", cacheCount + "", "in-memory entries", "var(--ok)")}
-                            <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:12px 14px;">
-                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-                                    <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);">JS Heap</span>
-                                    ${memPct != null ? `<span style="margin-left:auto;font-size:10px;color:var(--tx3);font-family:var(--mono);">${memPct}%</span>` : ""}
+                        <div class="metrics-overview">
+                            ${metricCard("clock", "Uptime", fmtUptime(uptime), "since Scout started", "uptime")}
+                            ${metricCard("layer-group", "Open Tabs", tabCount, tabCount === 1 ? "open browser tab" : "open browser tabs", "tabs")}
+                            ${metricCard("bolt", "Active Requests", `${inFlight}/${MAX_CONCURRENT}`, queued ? `${queued} waiting in queue` : "no requests queued", "requests")}
+                            ${metricCard("database", "Page Cache", cacheCount + "", "in-memory entries", "cache")}
+                            <article class="metric-card heap">
+                                <div class="metric-card-icon"><i class="fas fa-microchip"></i></div>
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <span class="metric-card-label">JS Heap</span>
+                                    ${memPct != null ? `<span style="margin-left:auto;font-size:10px;color:#91a8c8;font-family:var(--mono);">${memPct}%</span>` : ""}
                                 </div>
                                 ${
                                   memUsed != null
-                                    ? `<div style="font-size:18px;font-weight:700;color:var(--tx);font-family:var(--mono);line-height:1;">${fmtBytes(memUsed)}</div>
-                                   <div style="font-size:11px;color:var(--tx3);margin-top:2px;">of ${fmtBytes(memTotal)}</div>
+                                    ? `<div class="metric-card-value">${fmtBytes(memUsed)}</div>
+                                   <div class="metric-card-sub">of ${fmtBytes(memTotal)}</div>
                                    ${memBar}`
-                                    : `<div style="font-size:12px;color:var(--tx3);">Not available</div>`
+                                    : `<div class="metric-card-sub">Not available in this browser</div>`
                                 }
-                            </div>
+                            </article>
                         </div>
 
-                        <!-- Second row: network | storage | page performance -->
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                        <div class="metrics-details">
                             ${metricSection(
                               "Network",
+                              "globe",
                               metricRow(
                                 "WISP endpoint",
                                 (WISP || "-")
@@ -7877,12 +7897,14 @@ parent.postMessage({ t: 'ready' }, '*');
                             )}
                             ${metricSection(
                               "Storage",
+                              "hard-drive",
                               metricRow("Used", idbSize) +
                                 metricRow("Quota", idbQuota) +
                                 metricRow("localStorage", lsSize),
                             )}
                             ${metricSection(
                               "Page Performance",
+                              "gauge-high",
                               (pageLoadMs != null
                                 ? metricRow(
                                     "Page load time",
@@ -7909,6 +7931,13 @@ parent.postMessage({ t: 'ready' }, '*');
                             )}
                         </div>
                     `;
+    if (metricsUpdated) {
+      metricsUpdated.textContent = `Updated ${new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+      })}`;
+    }
   }
 
   function showMetrics() {
@@ -7945,15 +7974,83 @@ parent.postMessage({ t: 'ready' }, '*');
   });
 
   devToggle.onclick = () => toggleLogs();
-  codeBtn.onclick = () => toggleElements();
   if (refreshElements) {
     refreshElements.onclick = () => inspectCurrentPage();
   }
   $("settingsBtn").onclick = () => go(SETTINGS_INTERNAL);
   wireSettingsEvents();
 
+  const settingsSearch = $("settingsSearch");
+  const settingsSearchStatus = $("settingsSearchStatus");
+  function filterSettings() {
+    if (!settingsSearch) return;
+    const query = settingsSearch.value.trim().toLocaleLowerCase();
+    const sections = [...document.querySelectorAll(".settings-section")];
+    const navItems = [...document.querySelectorAll(".settings-nav-item")];
+    if (!query) {
+      sections.forEach((section) => {
+        section
+          .querySelectorAll(".settings-card")
+          .forEach((card) => (card.style.display = ""));
+        const active =
+          document.querySelector(".settings-nav-item.active")?.dataset
+            .section || "connection";
+        const key = active === "tutorial" ? "tutorial-page" : active;
+        section.style.display = section.dataset.section === key ? "flex" : "none";
+      });
+      navItems.forEach((item) => (item.hidden = false));
+      if (settingsSearchStatus) settingsSearchStatus.textContent = "";
+      return;
+    }
+
+    let matches = 0;
+    const matchingSections = new Set();
+    sections.forEach((section) => {
+      const cards = [...section.querySelectorAll(".settings-card")];
+      if (cards.length) {
+        let sectionMatches = 0;
+        cards.forEach((card) => {
+          const found = card.textContent.toLocaleLowerCase().includes(query);
+          card.style.display = found ? "" : "none";
+          if (found) sectionMatches++;
+        });
+        section.style.display = sectionMatches ? "flex" : "none";
+        if (sectionMatches) {
+          matches += sectionMatches;
+          matchingSections.add(section.dataset.section);
+        }
+      } else {
+        const found = section.textContent.toLocaleLowerCase().includes(query);
+        section.style.display = found ? "flex" : "none";
+        if (found) {
+          matches++;
+          matchingSections.add(section.dataset.section);
+        }
+      }
+    });
+    navItems.forEach((item) => {
+      const section =
+        item.dataset.section === "tutorial"
+          ? "tutorial-page"
+          : item.dataset.section;
+      item.hidden = !matchingSections.has(section);
+    });
+    if (settingsSearchStatus) {
+      settingsSearchStatus.textContent = matches
+        ? `${matches} matching setting group${matches === 1 ? "" : "s"}`
+        : "No matching settings";
+    }
+  }
+  if (settingsSearch) {
+    settingsSearch.addEventListener("input", filterSettings);
+  }
+
   document.querySelectorAll(".settings-nav-item").forEach((navBtn) => {
     navBtn.addEventListener("click", () => {
+      if (settingsSearch?.value) {
+        settingsSearch.value = "";
+        filterSettings();
+      }
       const section = navBtn.dataset.section;
       const settingsUrl = `gust://settings/${section}`;
       urlInput.value = settingsUrl;
@@ -8115,15 +8212,6 @@ parent.postMessage({ t: 'ready' }, '*');
   ntSearch.onkeydown = (e) => {
     if (e.key === "Enter") ntSearchBtn.click();
   };
-  const ntGithubBtn = $("ntGithubBtn");
-  if (ntGithubBtn)
-    ntGithubBtn.onclick = () =>
-      window.open(
-        "https://github.com/nautilus-os/GUST",
-        "_blank",
-        "noopener,noreferrer",
-      );
-
   ntWallpaperBtn.onclick = () => {
     $("wallpaperUrlInput").value = "";
     $("wallpaperModal").style.display = "flex";
@@ -9370,12 +9458,11 @@ parent.postMessage({ t: 'ready' }, '*');
       "focusurl",
       "settings",
       "logs",
-      "inspector",
       "history",
       "metrics",
       "fullscreen",
     ];
-    const defaultKeys = ["T", "W", "R", "D", "L", ",", "G", "I", "H", "M"];
+    const defaultKeys = ["T", "W", "R", "D", "L", ",", "G", "H", "M", "F"];
     document
       .querySelectorAll(
         '.settings-section[data-section="shortcuts"] .settings-btn-icon',
@@ -9856,12 +9943,7 @@ parent.postMessage({ t: 'ready' }, '*');
     },
     focusurl: () => urlInput.focus(),
     settings: () => showSettingsPage(true),
-    logs: () => {
-      if (logsEl) logsEl.classList.toggle("hidden");
-    },
-    inspector: () => {
-      toggleElements();
-    },
+    logs: () => toggleLogs(),
     history: () => {
       if (historyPopup.classList.contains("open")) hideHistoryPopup();
       else showHistoryPopup();
@@ -9882,7 +9964,6 @@ parent.postMessage({ t: 'ready' }, '*');
     focusurl: "L",
     settings: ",",
     logs: "G",
-    inspector: "I",
     history: "H",
     metrics: "M",
     fullscreen: "F",
@@ -9927,9 +10008,9 @@ parent.postMessage({ t: 'ready' }, '*');
   const tutSteps = [
     {
       target: null,
-      icon: '<i class="fas fa-wind"></i>',
-      title: "Welcome to GUST",
-      body: "A fast, private browser by Nautilus Labs. This tour covers all the key controls and takes under a minute. Restart anytime from Settings.",
+      icon: '<i class="fas fa-earth-americas"></i>',
+      title: "Welcome to Scout",
+      body: "A fast, private browser. This tour covers all the key controls and takes under a minute. Restart anytime from Settings.",
       pos: "center",
     },
     {
@@ -9965,7 +10046,7 @@ parent.postMessage({ t: 'ready' }, '*');
       target: "#blockToggle",
       icon: '<i class="fas fa-shield-halved"></i>',
       title: "Ad and Tracker Blocking",
-      body: "GUST blocks ads and trackers by default. The badge shows your current status. Click on it to toggle it off if a site is not loading correctly.",
+      body: "Scout blocks ads and trackers by default. The badge shows your current status. Click on it to toggle it off if a site is not loading correctly.",
       pos: "below-left",
     },
     {
@@ -9983,13 +10064,6 @@ parent.postMessage({ t: 'ready' }, '*');
       pos: "below-left",
     },
     {
-      target: "#codeBtn",
-      icon: '<i class="fas fa-code"></i>',
-      title: "Page Inspector",
-      body: "Inspect the live DOM of any page. Browse the element tree, view computed styles, box model and attributes. Works even if devtools are disabled in your browser.",
-      pos: "below-left",
-    },
-    {
       target: "#newTab",
       icon: '<i class="fas fa-plus"></i>',
       title: "New Tab",
@@ -10000,7 +10074,7 @@ parent.postMessage({ t: 'ready' }, '*');
       target: "#settingsBtn",
       icon: '<i class="fas fa-gear"></i>',
       title: "Settings",
-      body: "Configure the WISP server, search engine, wallpaper, font size, cache, shortcuts and more. You can also read about Gust or restart the tutorial from here.",
+      body: "Configure the WISP server, search engine, wallpaper, font size, cache, shortcuts and more. You can also read about Scout or restart the tutorial from here.",
       pos: "below-left",
     },
     {
@@ -10029,18 +10103,10 @@ parent.postMessage({ t: 'ready' }, '*');
       requiresNewTab: true,
     },
     {
-      target: "#ntGithubBtn",
-      icon: '<i class="fab fa-github"></i>',
-      title: "GitHub",
-      body: "GUST is open source. Click to view the repository, report issues, or contribute.",
-      pos: "above",
-      requiresNewTab: true,
-    },
-    {
       target: null,
       icon: '<i class="fas fa-check-circle"></i>',
       title: "You're all set!",
-      body: "That's the full tour. GUST is built for speed and privacy. Restart this tour anytime from Settings then Tutorial.",
+      body: "That's the full tour. Scout is built for speed and privacy. Restart this tour anytime from Settings then Tutorial.",
       pos: "center",
     },
   ];

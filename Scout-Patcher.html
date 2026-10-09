@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>GUST Patcher</title>
+<title>Scout Patcher</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
@@ -274,22 +274,21 @@ button,input,select,textarea{font:inherit}
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-spinner"></div>
-  <div class="loading-text">Fetching GUST source…</div>
+  <div class="loading-text">Fetching Scout source…</div>
   <div class="loading-sub" id="loadingSub">Connecting…</div>
 </div>
 
 <div class="titlebar">
   <div class="brand">
-    <i class="fas fa-wind gust-icon-anim" style="font-size:18px"></i>
-    <span class="brand-letters"><span class="gust-letter-G">G</span><span class="gust-letter-U">U</span><span class="gust-letter-S">S</span><span class="gust-letter-T">T</span></span>
+    <i class="fas fa-earth-americas gust-icon-anim" style="font-size:18px"></i>
+    <span class="brand-letters">Scout</span>
     <span class="brand-sub gust-sub-anim">Patcher</span>
   </div>
-  <div style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:#ffffff;margin-left:-4px;white-space:nowrap;position:relative;top:3px;">Made with <i class="fas fa-heart" style="color:#f87171;font-size:12px;margin:0 2px;"></i> by <strong style="font-weight:700;">Nautilus Labs</strong></div>
   <div class="titlebar-actions">
     <button class="btn-secondary" id="reloadSourceBtn"><i class="fas fa-rotate-right"></i> Refresh Source</button>
-    <button class="btn-secondary" id="pasteSourceBtn" title="Paste GUST source manually"><i class="fas fa-paste"></i> Paste Source</button>
-    <button class="btn-secondary" id="githubBtn" onclick="window.open('https://github.com/nautilus-os/GUST','_blank')" title="View GUST on GitHub" style="padding:0;width:36px;justify-content:center;"><i class="fab fa-github" style="font-size:17px;line-height:1"></i></button>
-    <button class="btn-primary" id="downloadBtn" disabled title="Please apply a patch"><i class="fas fa-download"></i> Download Patched GUST</button>
+    <button class="btn-secondary" id="pasteSourceBtn" title="Paste Scout source manually"><i class="fas fa-paste"></i> Paste Source</button>
+    <button class="btn-secondary" id="githubBtn" onclick="window.open('https://github.com/nautilus-os/GUST','_blank')" title="View Scout on GitHub" style="padding:0;width:36px;justify-content:center;"><i class="fab fa-github" style="font-size:17px;line-height:1"></i></button>
+    <button class="btn-primary" id="downloadBtn" disabled title="Please apply a patch"><i class="fas fa-download"></i> Download Patched Scout</button>
   </div>
 </div>
 
@@ -333,39 +332,37 @@ button,input,select,textarea{font:inherit}
 <div class="homepage-section active" data-section="homepage">
   <div class="homepage-hero">
     <div class="homepage-brand-wrap">
-      <i class="fas fa-wind hp-icon gust-icon-anim" id="hp-wind-icon"></i>
-      <span class="hp-brand-letters">
-        <span class="gust-letter-G">G</span><span class="gust-letter-U">U</span><span class="gust-letter-S">S</span><span class="gust-letter-T">T</span>
-      </span>
+      <i class="fas fa-earth-americas hp-icon gust-icon-anim" id="hp-wind-icon"></i>
+      <span class="hp-brand-letters">Scout</span>
       <span class="hp-brand-sub gust-sub-anim">Patcher</span>
     </div>
-    <div class="homepage-tagline">Customize your GUST build before you download it.</div>
+    <div class="homepage-tagline">Customize your Scout build before you download it.</div>
   </div>
   <div class="homepage-presets" id="homepagePresets">
 
-    <!-- Card 1: Base GUST -->
+    <!-- Card 1: Base Scout -->
     <div class="preset-card">
       <div class="preset-card-head">
         <div class="preset-card-icon blue"><i class="fab fa-github"></i></div>
         <div style="flex:1;min-width:0;">
-          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;"><span class="preset-card-title">Base GUST</span><span class="recommended-badge"><i class="fas fa-star" style="font-size:8px;"></i> Recommended</span></div>
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;"><span class="preset-card-title">Base Scout</span><span class="recommended-badge"><i class="fas fa-star" style="font-size:8px;"></i> Recommended</span></div>
           <div class="preset-card-subtitle">Straight from GitHub</div>
         </div>
       </div>
       <div class="preset-card-body">
-        <div class="preset-card-desc">Download the latest unmodified GUST source directly from the official GitHub repository with no custom patches applied. The most stable version of GUST, and the team at Nautilus Labs's recommended build.</div>
+        <div class="preset-card-desc">Download the latest unmodified Scout source directly from the official GitHub repository with no custom patches applied. The most stable version of Scout and the recommended build.</div>
       </div>
       <div class="preset-card-footer">
-        <button class="preset-dl-btn primary" id="presetBaseBtn" onclick="downloadBaseGUST()"><i class="fas fa-download"></i> Download Base GUST</button>
+        <button class="preset-dl-btn primary" id="presetBaseBtn" onclick="downloadBaseGUST()"><i class="fas fa-download"></i> Download Base Scout</button>
       </div>
     </div>
 
-    <!-- Card 2: GUST Lite Preset -->
+    <!-- Card 2: Scout Lite Preset -->
     <div class="preset-card">
       <div class="preset-card-head">
         <div class="preset-card-icon green"><i class="fas fa-feather"></i></div>
         <div>
-          <div class="preset-card-title">GUST Lite</div>
+          <div class="preset-card-title">Scout Lite</div>
           <div class="preset-card-subtitle">Trimmed-down build</div>
         </div>
       </div>
@@ -373,7 +370,7 @@ button,input,select,textarea{font:inherit}
         <div class="preset-card-desc">Removes thread controls, favicon proxying, WebRTC blocking, smart request headers, spellcheck, request &amp; page user-agent spoofing, dev console logs, dev inspector, metrics, and the language picker.</div>
       </div>
       <div class="preset-card-footer">
-        <button class="preset-dl-btn primary" id="presetLiteBtn" onclick="downloadLite()" disabled><i class="fas fa-download"></i> Download GUST Lite</button>
+        <button class="preset-dl-btn primary" id="presetLiteBtn" onclick="downloadLite()" disabled><i class="fas fa-download"></i> Download Scout Lite</button>
       </div>
     </div>
 
@@ -387,7 +384,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Language in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Language</strong> entry from GUST's Settings sidebar. The language picker panel will be hidden and its nav entry removed entirely.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Language</strong> entry from Scout's Settings sidebar. The language picker panel will be hidden and its nav entry removed entirely.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-language" data-section="language" data-master-for="language" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -406,7 +403,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show AI Assistant in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>AI Assistant</strong> entry from GUST's Settings sidebar and hide the AI toolbar button entirely. The assistant panel and all its settings will be inaccessible.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>AI Assistant</strong> entry from Scout's Settings sidebar and hide the AI toolbar button entirely. The assistant panel and all its settings will be inaccessible.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-aiassistant" data-section="aiassistant" data-master-for="ai-context" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -425,7 +422,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Connection in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Connection</strong> entry from GUST's Settings sidebar. WISP URL, thread controls, WebRTC blocking, and smart headers will all be hidden from Settings and locked to their defaults.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Connection</strong> entry from Scout's Settings sidebar. WISP URL, thread controls, WebRTC blocking, and smart headers will all be hidden from Settings and locked to their defaults.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-connection" data-section="connection" data-master-for="wisp-url threads webrtc-block media-headers" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -462,14 +459,14 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Fallback in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Fallback</strong> entry from GUST's Settings sidebar. The fallback toggle, fallback WISP URL, retry policy, and error triggers will all be hidden from Settings.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Fallback</strong> entry from Scout's Settings sidebar. The fallback toggle, fallback WISP URL, retry policy, and error triggers will all be hidden from Settings.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-fallback" data-section="fallback" data-master-for="fallback-enabled fallback-wisp fallback-retries fallback-triggers" onclick="toggleSidebarMaster(this)"></div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-toggle-on"></i> Fallback Toggle</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable fallback WISP switch</div><div class="patch-row-desc"><strong>Uncheck to permanently disable</strong> the entire fallback system and remove its toggle from Settings. If the primary WISP fails, GUST will show an error immediately with no retry or fallback attempt.</div></div><div class="patch-check" data-patch="fallback-enabled" data-section="fallback" data-master-for="fallback-wisp fallback-retries fallback-triggers" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable fallback WISP switch</div><div class="patch-row-desc"><strong>Uncheck to permanently disable</strong> the entire fallback system and remove its toggle from Settings. If the primary WISP fails, Scout will show an error immediately with no retry or fallback attempt.</div></div><div class="patch-check" data-patch="fallback-enabled" data-section="fallback" data-master-for="fallback-wisp fallback-retries fallback-triggers" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card" data-child-of="fallback-enabled">
@@ -499,7 +496,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Search in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Search</strong> entry from GUST's Settings sidebar. The search engine picker, spellcheck toggle, and favicon proxy option will all be hidden from Settings.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Search</strong> entry from Scout's Settings sidebar. The search engine picker, spellcheck toggle, and favicon proxy option will all be hidden from Settings.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-search" data-section="search" data-master-for="search-engine custom-search-engine spellcheck search-favicon" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -516,9 +513,9 @@ button,input,select,textarea{font:inherit}
     </div>
   </div>
   <div class="settings-card">
-    <div class="settings-card-head"><i class="fas fa-spell-check"></i> Spellcheck <span class="broken-tag">[BROKEN]</span></div>
+    <div class="settings-card-head"><i class="fas fa-spell-check"></i> Spellcheck</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable spellcheck <span class="broken-tag">broken</span></div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the spellcheck toggle from Settings. Only affects GUST's own UI inputs — spellcheck inside proxied pages cannot be controlled and remains non-functional.</div></div><div class="patch-check checked" data-patch="spellcheck" data-section="search" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable spellcheck</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the spellcheck toggle from Settings and disable spellcheck in proxied pages.</div></div><div class="patch-check checked" data-patch="spellcheck" data-section="search" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
@@ -536,7 +533,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Privacy in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Privacy</strong> entry from GUST's Settings sidebar. Ad blocking, user-agent spoofing, and custom filter rules will all be hidden from Settings.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Privacy</strong> entry from Scout's Settings sidebar. Ad blocking, user-agent spoofing, and custom filter rules will all be hidden from Settings.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-privacy" data-section="privacy" data-master-for="adblock-toggle pause-site-btn ua-request ua-page custom-filters adblock-allowlist" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -570,7 +567,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Cache in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Cache</strong> entry from GUST's Settings sidebar. Tab caching and the Clear Cache / Reset Everything buttons will both be hidden from Settings.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Cache</strong> entry from Scout's Settings sidebar. Tab caching and the Clear Cache / Reset Everything buttons will both be hidden from Settings.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-cache" data-section="cache" data-master-for="tab-cache clear-cache" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -595,7 +592,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Files &amp; Media in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Files &amp; Media</strong> entry from GUST's Settings sidebar. Range requests, auto-download, and all inline viewer toggles (PDF, image, video, audio, text) will be hidden from Settings.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Files &amp; Media</strong> entry from Scout's Settings sidebar. Range requests, auto-download, and all inline viewer toggles (PDF, image, video, audio, text) will be hidden from Settings.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-filesandmedia" data-section="filesandmedia" data-master-for="render-limits media-range media-download media-pdf media-img media-video media-audio media-text" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -656,7 +653,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Appearance in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Appearance</strong> entry from GUST's Settings sidebar. Font size, panel width persistence, panel position, and fullscreen-on-launch will all be hidden from Settings.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Appearance</strong> entry from Scout's Settings sidebar. Font size, panel width persistence, panel position, and fullscreen-on-launch will all be hidden from Settings.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-appearance" data-section="appearance" data-master-for="font-size panel-widths panels-left auto-fullscreen" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -681,7 +678,7 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-expand"></i> Fullscreen on Launch</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Start in fullscreen</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> auto-fullscreen on launch and remove its toggle from Settings. GUST will always open in a normal window.</div></div><div class="patch-check checked" data-patch="auto-fullscreen" data-section="appearance" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Start in fullscreen</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> auto-fullscreen on launch and remove its toggle from Settings. Scout will always open in a normal window.</div></div><div class="patch-check checked" data-patch="auto-fullscreen" data-section="appearance" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -693,7 +690,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Home Screen in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Home Screen</strong> entry from GUST's Settings sidebar. The bookmarks bar toggle, wallpaper controls, and clock options will all be hidden from Settings.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Home Screen</strong> entry from Scout's Settings sidebar. The bookmarks bar toggle, wallpaper controls, and clock options will all be hidden from Settings.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-homescreen" data-section="homescreen" data-master-for="bookmarks-bar nt-wallpaper nt-clock nt-clock24" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -725,7 +722,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Shortcuts in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Shortcuts</strong> entry from GUST's Settings sidebar. The keyboard shortcuts enable/disable toggle and the full key binding list will be hidden from Settings.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Shortcuts</strong> entry from Scout's Settings sidebar. The keyboard shortcuts enable/disable toggle and the full key binding list will be hidden from Settings.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-shortcuts" data-section="shortcuts" data-master-for="shortcuts-panel" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -744,7 +741,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Tutorial in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Tutorial</strong> entry from GUST's Settings sidebar. The tutorial overlay, auto-launch on first load, and the restart button in Settings will all be hidden.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Tutorial</strong> entry from Scout's Settings sidebar. The tutorial overlay, auto-launch on first load, and the restart button in Settings will all be hidden.</div>
     </div>
     <div class="sidebar-master-check checked" data-patch="sidebar-nav-tutorial" data-section="core-tutorial" data-master-for="tutorial-include tutorial-auto tutorial-settings" onclick="toggleSidebarMaster(this)"></div>
   </div>
@@ -1086,7 +1083,7 @@ async function attemptFetch(url, label, opts={}) {
   const res = await fetchWithTimeout(url, 15000, opts);
   if (!res.ok) throw new Error('HTTP ' + res.status);
   const text = await res.text();
-  if (!looksLikeGUST(text)) throw new Error('Response (' + text.length + 'B) not valid GUST source');
+  if (!looksLikeGUST(text)) throw new Error('Response (' + text.length + 'B) not valid Scout source');
   return text;
 }
 let _firstLoad = true;
@@ -1131,11 +1128,11 @@ async function fetchSource() {
     box.id = 'fetchErrorBox';
     box.innerHTML = `
       <i class="fas fa-triangle-exclamation"></i>
-      <h3>Could not load GUST source</h3>
+      <h3>Could not load Scout source</h3>
       <p>All fetch attempts failed (likely a network/CORS restriction).<br>
       Open DevTools (F12) → Console for details, then hit <strong style="color:var(--tx2)">Refresh Source</strong>.<br><br>
-      <strong style="color:var(--tx2)">Or paste the GUST source manually below:</strong></p>
-      <textarea id="manualSourceInput" placeholder="Paste the full GUST HTML here (download from github.com/nautilus-os/GUST)…"
+      <strong style="color:var(--tx2)">Or paste the Scout source manually below:</strong></p>
+      <textarea id="manualSourceInput" placeholder="Paste the full Scout HTML here (download from github.com/nautilus-os/GUST)…"
         style="width:100%;height:120px;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:10px;
                color:var(--tx2);font-family:var(--mono);font-size:12px;resize:vertical;outline:none;margin-top:4px;"></textarea>
       <button id="manualSourceBtn" class="btn-primary" style="margin-top:2px;">
@@ -1146,7 +1143,7 @@ async function fetchSource() {
     document.getElementById('manualSourceBtn').addEventListener('click', () => {
       const val = document.getElementById('manualSourceInput').value.trim();
       if (!looksLikeGUST(val)) {
-        setStatus('err', 'Pasted content does not look like valid GUST source — check you copied the full file.');
+        setStatus('err', 'Pasted content does not look like valid Scout source — check you copied the full file.');
         return;
       }
       sourceHTML = val; sourceLoaded = true;
@@ -1169,7 +1166,7 @@ function setStatus(type, text) {
 document.getElementById('downloadBtn').addEventListener('click', () => { if (sourceLoaded) buildAndDownload(); });
 document.getElementById('reloadSourceBtn').addEventListener('click', fetchSource);
 
-// Paste Source button — opens a modal for manually pasting GUST HTML
+// Paste Source button — opens a modal for manually pasting Scout HTML
 document.getElementById('pasteSourceBtn').addEventListener('click', () => {
   // Remove existing modal if any
   const existing = document.getElementById('pasteModal');
@@ -1180,14 +1177,14 @@ document.getElementById('pasteSourceBtn').addEventListener('click', () => {
   modal.innerHTML = `
     <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:16px;padding:24px;width:520px;max-width:94vw;display:flex;flex-direction:column;gap:14px;box-shadow:0 16px 48px rgba(0,0,0,.7);">
       <div style="display:flex;align-items:center;justify-content:space-between;">
-        <span style="font-size:15px;font-weight:700;color:var(--tx)"><i class="fas fa-paste" style="color:var(--ac);margin-right:8px;"></i>Paste GUST Source</span>
+        <span style="font-size:15px;font-weight:700;color:var(--tx)"><i class="fas fa-paste" style="color:var(--ac);margin-right:8px;"></i>Paste Scout Source</span>
       </div>
       <p style="font-size:12px;color:var(--tx3);line-height:1.6;">
         Download <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;">index.html</code> from
         <a href="https://github.com/nautilus-os/GUST" target="_blank" style="color:var(--ac)">github.com/nautilus-os/GUST</a>
         then paste the full file contents below.
       </p>
-      <textarea id="pasteModalInput" placeholder="Paste the full GUST HTML here…"
+      <textarea id="pasteModalInput" placeholder="Paste the full Scout HTML here…"
         style="width:100%;height:160px;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;
                padding:10px;color:var(--tx2);font-family:var(--mono);font-size:12px;resize:vertical;outline:none;"></textarea>
       <div style="display:flex;gap:8px;justify-content:flex-end;align-items:center;">
@@ -1201,7 +1198,7 @@ document.getElementById('pasteSourceBtn').addEventListener('click', () => {
   document.getElementById('pasteModalLoad').onclick = () => {
     const val = document.getElementById('pasteModalInput').value.trim();
     if (!looksLikeGUST(val)) {
-      document.getElementById('pasteModalStatus').textContent = 'This does not look like valid GUST source — make sure you copied the complete index.html file.';
+      document.getElementById('pasteModalStatus').textContent = 'This does not look like valid Scout source — make sure you copied the complete index.html file.';
       return;
     }
     sourceHTML = val; sourceLoaded = true;
@@ -1397,21 +1394,8 @@ function buildPatchScript(removedPatches) {
   if (rm.has('custom-search-engine'))
     (rm.has('sidebar-nav-search') ? badge : css)('#customSearchCard');
   if (rm.has('spellcheck')) {
-    // Show a "broken" warning badge (special case — spellcheck doesn't actually work)
-    js('(function(){');
-    js('  function _spellBroken(){');
-    js('    var sw=document.getElementById("settingsSpellSwitch");');
-    js('    if(!sw||sw._gp_broken) return;');
-    js('    sw._gp_broken=true;');
-    js('    var row=sw.closest(".settings-switch-row,.settings-toggle-row");');
-    js('    var b=document.createElement("div");');
-    js('    b.style.cssText="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:rgba(255,68,68,0.10);border:1px solid rgba(255,68,68,0.28);border-radius:6px;font-size:11px;font-family:var(--mono,monospace);color:rgba(255,100,100,0.9);white-space:nowrap;flex-shrink:0;margin-left:6px;";');
-    js('    b.innerHTML=\'<i class="fas fa-triangle-exclamation" style="font-size:9px;"></i> broken\';');
-    js('    if(row&&!row._gp_badged){row._gp_badged=true;row.appendChild(b);}');
-    js('    else if(!row){sw.parentNode.insertBefore(b,sw.nextSibling);}');
-    js('  }');
-    js('  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",_spellBroken);}else{_spellBroken();}');
-    js('})();');
+    (rm.has('sidebar-nav-search') ? badge : css)('#settingsSpellSwitch');
+    ls('gust:spellcheck:v1', 'false');
   }
   if (rm.has('language'))
     css('#settingsLanguage,#settingsLanguageTrigger,#settingsLanguagePanel,#settingsLanguageSave,#settingsLanguageStatus');
@@ -1642,7 +1626,7 @@ function buildPatchScript(removedPatches) {
 }
 
 function buildAndDownload() {
-  setStatus('info', 'Building patched GUST...');
+  setStatus('info', 'Building patched Scout...');
 
   const removed = [
     ...[...document.querySelectorAll('.patch-check[data-patch]')]
@@ -1678,13 +1662,13 @@ function buildAndDownload() {
   const blob = new Blob([html], {type:'text/html'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'GUST-Patched.html';
+  a.download = 'Scout-Patched.html';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   var kb = (html.length/1024).toFixed(0);
-  var msg = removed.length ? ('Downloaded GUST-Patched.html - ' + kb + ' KB (' + removed.length + ' patch' + (removed.length>1?'es':'') + ' applied)') : ('Downloaded GUST-Patched.html - ' + kb + ' KB');
+  var msg = removed.length ? ('Downloaded Scout-Patched.html - ' + kb + ' KB (' + removed.length + ' patch' + (removed.length>1?'es':'') + ' applied)') : ('Downloaded Scout-Patched.html - ' + kb + ' KB');
   setStatus('ok', msg);
   const fsc = document.getElementById('fileSizeCount');
   if (fsc) { fsc.textContent = kb + ' KB'; }
@@ -1696,9 +1680,9 @@ function buildAndDownload() {
 const patcherTutSteps = [
   {
     target: null,
-    icon: '<i class="fas fa-wind"></i>',
-    title: 'Welcome to GUST Patcher',
-    body: 'Build a custom version of GUST with only the features you want. This quick tour covers all the key controls.',
+    icon: '<i class="fas fa-earth-americas"></i>',
+    title: 'Welcome to Scout Patcher',
+    body: 'Build a custom version of Scout with only the features you want. This quick tour covers all the key controls.',
     pos: 'center'
   },
   {
@@ -1713,34 +1697,34 @@ const patcherTutSteps = [
     target: '#reloadSourceBtn',
     icon: '<i class="fas fa-rotate-right"></i>',
     title: 'Refresh Source',
-    body: 'Fetches the latest GUST source from GitHub. Also resets all checkboxes back to the default base GUST configuration.',
+    body: 'Fetches the latest Scout source from GitHub. Also resets all checkboxes back to the default base Scout configuration.',
     pos: 'below'
   },
   {
     target: '#pasteSourceBtn',
     icon: '<i class="fas fa-paste"></i>',
     title: 'Paste Source',
-    body: 'Can\'t fetch automatically? Paste the raw GUST HTML here manually. Download it from GitHub and paste the whole file in.',
+    body: 'Can\'t fetch automatically? Paste the raw Scout HTML here manually. Download it from GitHub and paste the whole file in.',
     pos: 'below'
   },
   {
     target: '#githubBtn',
     icon: '<i class="fab fa-github"></i>',
-    title: 'GUST on GitHub',
-    body: "GUST is fully open source, and you can view GUST's full source code, report issues, or download GUST directly from the GitHub repository. If you like this project, please leave a star on the repository!",
+    title: 'Scout on GitHub',
+    body: "Scout is fully open source, and you can view Scout's full source code, report issues, or download Scout directly from the GitHub repository. If you like this project, please leave a star on the repository!",
     pos: 'below'
   },
   {
     target: '#downloadBtn',
     icon: '<i class="fas fa-download"></i>',
-    title: 'Download GUST',
-    body: 'Once the source is loaded, click here to build and download your custom patched GUST. You must uncheck at least one patch to enable this button — if you want the unmodified build, use the <strong>Base GUST</strong> card on the home screen instead.',
+    title: 'Download Scout',
+    body: 'Once the source is loaded, click here to build and download your custom patched Scout. You must uncheck at least one patch to enable this button — if you want the unmodified build, use the <strong>Base Scout</strong> card on the home screen instead.',
     pos: 'below'
   },
   {
     icon: '<i class="fas fa-box-open"></i>',
     title: 'Quick Presets',
-    body: 'Need a fast start? Grab <strong>Base GUST</strong> straight from GitHub, or <strong>GUST Lite</strong> — a trimmed build with bloat already removed.',
+    body: 'Need a fast start? Grab <strong>Base Scout</strong> straight from GitHub, or <strong>Scout Lite</strong> — a trimmed build with bloat already removed.',
     pos: 'above',
     pad: 10,
     cloneSelector: '#homepagePresets .preset-card',
@@ -1766,8 +1750,8 @@ const patcherTutSteps = [
   {
     target: null,
     icon: '<i class="fas fa-check-circle"></i>',
-    title: 'Default selections = base GUST',
-    body: 'All currently checked patches represent the default base GUST build. Uncheck anything you want to remove before downloading.',
+    title: 'Default selections = base Scout',
+    body: 'All currently checked patches represent the default base Scout build. Uncheck anything you want to remove before downloading.',
     pos: 'center'
   }
 ];
@@ -2087,7 +2071,7 @@ document.getElementById('patcherTutorialSkip').addEventListener('click', endPatc
 // ── Preset downloads ──
 function downloadBaseGUST() {
   if (sourceLoaded && sourceHTML) {
-    triggerDownload(sourceHTML, 'GUST.html');
+    triggerDownload(sourceHTML, 'Scout.html');
     return;
   }
   // Source not loaded yet — fetch directly
@@ -2095,9 +2079,9 @@ function downloadBaseGUST() {
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching…'; }
   fetch('https://cdn.jsdelivr.net/gh/nautilus-os/GUST@main/index.html', {cache:'no-store'})
     .then(r => { if (!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
-    .then(text => { triggerDownload(text, 'GUST.html'); })
+    .then(text => { triggerDownload(text, 'Scout.html'); })
     .catch(() => { window.open('https://github.com/nautilus-os/GUST/raw/refs/heads/main/index.html','_blank'); })
-    .finally(() => { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download"></i> Download Base GUST'; } });
+    .finally(() => { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download"></i> Download Base Scout'; } });
 }
 
 const LITE_PATCHES = [
@@ -2142,7 +2126,7 @@ function downloadLite() {
     el.classList.toggle('checked', saved[el.dataset.patch]);
   });
   updateCounts();
-  triggerDownload(html, 'GUST-Lite.html');
+  triggerDownload(html, 'Scout-Lite.html');
 }
 
 function triggerDownload(content, filename) {
